@@ -21,12 +21,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/react-custome-table.git"
+    "url": "https://github.com/nidhijha111/React-custome-table"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/react-custome-table/issues"
+    "url": "https://github.com/nidhijha111/React-custome-table"
   },
-  "homepage": "https://github.com/yourusername/react-custome-table#readme",
+  "homepage": "https://github.com/nidhijha111/React-custome-tables#readme",
   "peerDependencies": {
     "react": "^17.0.0 || ^18.0.0 || ^19.0.0",
     "react-dom": "^17.0.0 || ^18.0.0 || ^19.0.0"
