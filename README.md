@@ -25,16 +25,53 @@ git clone https://github.com/nidhijha111/React-custome-table.git
 import React from 'react';
 import CustomTable from 'react-custom-table';
 
-const data = [
-  { id: 1, name: 'John Doe', age: 28 },
-  { id: 2, name: 'Jane Smith', age: 34 },
-];
 
-const columns = [
-  { key: 'id', label: 'ID' },
-  { key: 'name', label: 'Name' },
-  { key: 'age', label: 'Age' },
-];
+  const data = [
+    {
+      id: "pay_001",
+      amount: 120.5,
+      status: "pending",
+      email: "alice@example.com",
+    },
+    {
+      id: "pay_002",
+      amount: 75.0,
+      status: "processing",
+      email: "bob@example.com",
+    },
+    {
+      id: "pay_003",
+      amount: 250.0,
+      status: "success",
+      email: "carol@example.com",
+    },
+    {
+      id: "pay_004",
+      amount: 40.99,
+      status: "failed",
+      email: "dave@example.com",
+    },
+    {
+      id: "pay_005",
+      amount: 99.95,
+      status: "success",
+      email: "eve@example.com",
+    }
+  ]
+
+
+ const columns = [
+    { title: "ID", dataIndex: "id", sorter: true, showSearch: true },
+    {
+      title: "Amount",
+      dataIndex: "amount",
+      sorter: true,
+      showSearch: true,
+      customRenderer: (value) => `$${value.toFixed(2)}`,
+    },
+    { title: "Status", dataIndex: "status", sorter: true, showSearch: true },
+    { title: "Email", dataIndex: "email", sorter: false, showSearch: true },
+  ];
 
 const App = () => (
   <div>

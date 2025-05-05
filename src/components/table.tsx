@@ -5,6 +5,7 @@ import {
   faSortUp,
   faSortDown,
   faSort,
+  faDownload,
 } from "@fortawesome/free-solid-svg-icons";
 import {
   Button,
@@ -23,21 +24,33 @@ import {
 import type { TableProps } from "../interface/table";
 import { faFilter } from "@fortawesome/free-solid-svg-icons";
 
-const Table: React.FC<TableProps> = ({ columns, data, sortable = false, theme = {} }) => {
-  const [sortConfig, setSortConfig] = useState<{ key: string; direction: "asc" | "desc" } | null>(null);
+const Table: React.FC<TableProps> = ({
+  columns,
+  data,
+  sortable = false,
+  theme = {},
+}) => {
+  const [sortConfig, setSortConfig] = useState<{
+    key: string;
+    direction: "asc" | "desc";
+  } | null>(null);
   const [searchText, setSearchText] = useState<string>("");
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [visibleColumns, setVisibleColumns] = useState<string[]>(columns.map((c) => c.dataIndex));
+  const [visibleColumns, setVisibleColumns] = useState<string[]>(
+    columns.map((c) => c.dataIndex)
+  );
   const [filters, setFilters] = useState<Record<string, string>>({});
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [filterOpenCol, setFilterOpenCol] = useState<string | null>(null);
 
   // Combined filtering: global search + column filters
   const filteredData = useMemo(() => {
     return data.filter((row) => {
       // global search
-      const matchesGlobal = !searchText ||
+      const matchesGlobal =
+        !searchText ||
         Object.values(row).some((val) =>
           String(val).toLowerCase().includes(searchText.toLowerCase())
         );
@@ -79,7 +92,10 @@ const Table: React.FC<TableProps> = ({ columns, data, sortable = false, theme = 
     if (!sortable) return;
     setSortConfig((prev) =>
       prev?.key === columnKey
-        ? { key: columnKey, direction: prev.direction === "asc" ? "desc" : "asc" }
+        ? {
+            key: columnKey,
+            direction: prev.direction === "asc" ? "desc" : "asc",
+          }
         : { key: columnKey, direction: "asc" }
     );
   };
@@ -101,7 +117,10 @@ const Table: React.FC<TableProps> = ({ columns, data, sortable = false, theme = 
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
         // close
       }
     };
@@ -128,7 +147,9 @@ const Table: React.FC<TableProps> = ({ columns, data, sortable = false, theme = 
               setCurrentPage(1);
             }}
           />
-          <Button themeStyle={theme} onClick={handleExport}>Export CSV</Button>
+          <Button themeStyle={theme} onClick={handleExport}>
+            <FontAwesomeIcon icon={faDownload} /> Export CSV
+          </Button>
         </div>
         <DropdownWrapper ref={dropdownRef}>
           <DropdownButton onClick={() => setIsOpen((o) => !o)}>
@@ -161,7 +182,12 @@ const Table: React.FC<TableProps> = ({ columns, data, sortable = false, theme = 
                   <th key={col.dataIndex}>
                     <div style={{ display: "flex", flexDirection: "column" }}>
                       <div
-                        style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: col.sorter ? "pointer" : "default" }}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.5rem",
+                          cursor: col.sorter ? "pointer" : "default",
+                        }}
                         onClick={() => col.sorter && handleSort(col.dataIndex)}
                       >
                         {col.title}
@@ -183,9 +209,25 @@ const Table: React.FC<TableProps> = ({ columns, data, sortable = false, theme = 
                           placeholder={`Filter ${col.title}`}
                           value={filters[col.dataIndex] || ""}
                           onChange={(e) => {
-                            setFilters((f) => ({ ...f, [col.dataIndex]: e.target.value }));
+                            setFilters((f) => ({
+                              ...f,
+                              [col.dataIndex]: e.target.value,
+                            }));
                             setCurrentPage(1);
                           }}
+                        />
+                      )}
+                      {col.showFilter && (
+                        <FontAwesomeIcon
+                          icon={faFilter}
+                          style={{ cursor: "pointer" }}
+                          onClick={() =>
+                            setFilterOpenCol(
+                              filterOpenCol === col.dataIndex
+                                ? null
+                                : col.dataIndex
+                            )
+                          }
                         />
                       )}
                     </div>
@@ -212,16 +254,52 @@ const Table: React.FC<TableProps> = ({ columns, data, sortable = false, theme = 
       </div>
 
       <PaginationWrapper>
-        <PaginationControls>
-          <Button themeStyle={theme} onClick={() => setCurrentPage(1)} disabled={currentPage === 1}>First</Button>
-          <Button themeStyle={theme} onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))} disabled={currentPage === 1}>Prev</Button>
-          <span>Page {currentPage} of {totalPages}</span>
-          <Button themeStyle={theme} onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages}>Next</Button>
-          <Button themeStyle={theme} onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages}>Last</Button>
-        </PaginationControls>
-        <Select value={rowsPerPage} onChange={(e) => { setRowsPerPage(Number(e.target.value)); setCurrentPage(1); }}>
-          {[5,10,25,50].map(s => <option key={s} value={s}>{s === data.length ? 'All' : `Show ${s}`}</option>)}
+        <Select
+          value={rowsPerPage}
+          onChange={(e) => {
+            setRowsPerPage(Number(e.target.value));
+            setCurrentPage(1);
+          }}
+        >
+          {[5, 10, 25, 50].map((s) => (
+            <option key={s} value={s}>
+              {s === data.length ? "All" : `Show ${s}`}
+            </option>
+          ))}
         </Select>
+        <PaginationControls>
+          <Button
+            themeStyle={theme}
+            onClick={() => setCurrentPage(1)}
+            disabled={currentPage === 1}
+          >
+            First
+          </Button>
+          <Button
+            themeStyle={theme}
+            onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+            disabled={currentPage === 1}
+          >
+            Prev
+          </Button>
+          <span>
+            Page {currentPage} of {totalPages}
+          </span>
+          <Button
+            themeStyle={theme}
+            onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </Button>
+          <Button
+            themeStyle={theme}
+            onClick={() => setCurrentPage(totalPages)}
+            disabled={currentPage === totalPages}
+          >
+            Last
+          </Button>
+        </PaginationControls>
       </PaginationWrapper>
     </TableWrapper>
   );
