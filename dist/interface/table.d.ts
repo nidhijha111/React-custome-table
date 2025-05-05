@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 export type TableProps = {
     columns: Column[];
     data: Record<string, any>[];
@@ -13,8 +14,13 @@ export type TableTheme = {
     textColor?: string;
 };
 export interface Column {
-    key?: string;
-    label?: string;
-    filter?: boolean;
-    sortable?: boolean;
+    title: string;
+    dataIndex: string;
+    sorter?: boolean;
+    showSearch?: boolean;
+    customRenderer?: (value: any, row: any) => ReactNode;
+    onCell?: (record: any) => {
+        rowSpan?: number;
+        colSpan?: number;
+    };
 }

@@ -1,9 +1,16 @@
 import styled from "styled-components";
+const defaultTheme = {
+    textColor: "#333",
+    buttonBg: "#2563eb",
+    borderColor: "#ccc",
+    headerBg: "#f3f4f6",
+    rowHoverColor: "#f9f9f9",
+};
 export const TableWrapper = styled.div `
   padding: 1rem;
   background-color: #fff;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  color: ${({ themeStyle }) => themeStyle.textColor || "#333"};
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  color: ${({ themeStyle }) => (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.textColor) || defaultTheme.textColor};
   width: 100%;
 `;
 export const Toolbar = styled.div `
@@ -29,7 +36,7 @@ export const Select = styled.select `
   border-radius: 4px;
 `;
 export const Button = styled.button `
-  background-color: ${({ themeStyle }) => themeStyle.buttonBg || "#2563eb"};
+  background-color: ${({ themeStyle }) => (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.buttonBg) || defaultTheme.buttonBg};
   color: white;
   padding: 0.4rem 0.8rem;
   border-radius: 4px;
@@ -62,7 +69,7 @@ export const DropdownMenu = styled.div `
   background-color: #fff;
   border-radius: 4px;
   border: 1px solid #ddd;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   max-height: 240px;
   overflow-y: auto;
   padding: 0.5rem;
@@ -87,22 +94,22 @@ export const StyledTable = styled.table `
   width: 100%;
   border-collapse: collapse;
   min-width: 600px;
-  border: 1px solid ${({ themeStyle }) => themeStyle.borderColor || "#ccc"};
+  border: 1px solid ${({ themeStyle }) => (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.borderColor) || defaultTheme.borderColor};
 
   th, td {
     padding: 0.75rem;
-    border: 1px solid ${({ themeStyle }) => themeStyle.borderColor || "#ccc"};
+    border: 1px solid ${({ themeStyle }) => (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.borderColor) || defaultTheme.borderColor};
     text-align: left;
   }
 
   th {
-    background-color: ${({ themeStyle }) => themeStyle.headerBg || "#f3f4f6"};
+    background-color: ${({ themeStyle }) => (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.headerBg) || defaultTheme.headerBg};
     cursor: pointer;
     user-select: none;
   }
 
   tr:hover {
-    background-color: ${({ themeStyle }) => themeStyle.rowHoverColor || "#f9f9f9"};
+    background-color: ${({ themeStyle }) => (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.rowHoverColor) || defaultTheme.rowHoverColor};
   }
 `;
 export const PaginationWrapper = styled.div `

@@ -20,29 +20,38 @@ import {
   TableWrapper,
   Toolbar,
 } from "./styledcomponets/style";
+import type { TableProps } from "../interface/table";
+import { faFilter } from "@fortawesome/free-solid-svg-icons";
 
-const Table = ({ columns, data, sortable = false, theme = {} }) => {
-  const [sortConfig, setSortConfig] = useState(null);
-  const [searchText, setSearchText] = useState("");
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [visibleColumns, setVisibleColumns] = useState(
-    columns.map((c) => c.dataIndex)
-  );
-  const [isOpen, setIsOpen] = useState(false);
-  const [filters, setFilters] = useState({});
-  const dropdownRef = useRef(null);
+const Table: React.FC<TableProps> = ({ columns, data, sortable = false, theme = {} }) => {
+  const [sortConfig, setSortConfig] = useState<{ key: string; direction: "asc" | "desc" } | null>(null);
+  const [searchText, setSearchText] = useState<string>("");
+  const [rowsPerPage, setRowsPerPage] = useState<number>(10);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [visibleColumns, setVisibleColumns] = useState<string[]>(columns.map((c) => c.dataIndex));
+  const [filters, setFilters] = useState<Record<string, string>>({});
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
+  // Combined filtering: global search + column filters
   const filteredData = useMemo(() => {
     return data.filter((row) => {
+      // global search
+      const matchesGlobal = !searchText ||
+        Object.values(row).some((val) =>
+          String(val).toLowerCase().includes(searchText.toLowerCase())
+        );
+      if (!matchesGlobal) return false;
+      // column filters
       return visibleColumns.every((colKey) => {
         const filterValue = filters[colKey]?.toLowerCase() || "";
-        const rowValue = String(row[colKey] || "").toLowerCase();
+        const rowValue = String(row[colKey] ?? "").toLowerCase();
         return rowValue.includes(filterValue);
       });
     });
-  }, [data, filters, visibleColumns]);
+  }, [data, searchText, filters, visibleColumns]);
 
+  // Sorting
   const sortedData = useMemo(() => {
     if (!sortable || !sortConfig) return filteredData;
     return [...filteredData].sort((a, b) => {
@@ -57,31 +66,30 @@ const Table = ({ columns, data, sortable = false, theme = {} }) => {
     });
   }, [filteredData, sortConfig, sortable]);
 
+  // Pagination slice
   const paginatedData = useMemo(() => {
     const start = (currentPage - 1) * rowsPerPage;
     return sortedData.slice(start, start + rowsPerPage);
   }, [sortedData, currentPage, rowsPerPage]);
 
-  const totalPages = Math.ceil(sortedData.length / rowsPerPage);
+  const totalPages = Math.max(1, Math.ceil(sortedData.length / rowsPerPage));
 
-  const handleSort = (columnKey) => {
+  // Handlers
+  const handleSort = (columnKey: string) => {
     if (!sortable) return;
     setSortConfig((prev) =>
       prev?.key === columnKey
-        ? {
-            key: columnKey,
-            direction: prev.direction === "asc" ? "desc" : "asc",
-          }
+        ? { key: columnKey, direction: prev.direction === "asc" ? "desc" : "asc" }
         : { key: columnKey, direction: "asc" }
     );
   };
 
-  const exportToCSV = () => {
+  const handleExport = () => {
     const headers = visibleColumns.join(",");
-    const rows = data.map((row) =>
+    const rowsCsv = sortedData.map((row) =>
       visibleColumns.map((col) => row[col] ?? "").join(",")
     );
-    const csvContent = [headers, ...rows].join("\n");
+    const csvContent = [headers, ...rowsCsv].join("\n");
     const blob = new Blob([csvContent], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -92,20 +100,18 @@ const Table = ({ columns, data, sortable = false, theme = {} }) => {
   };
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false);
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        // close
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const toggleColumn = (colKey) => {
+  const toggleColumn = (key: string) => {
     setVisibleColumns((prev) =>
-      prev.includes(colKey)
-        ? prev.filter((c) => c !== colKey)
-        : [...prev, colKey]
+      prev.includes(key) ? prev.filter((c) => c !== key) : [...prev, key]
     );
   };
 
@@ -117,15 +123,15 @@ const Table = ({ columns, data, sortable = false, theme = {} }) => {
             type="text"
             placeholder="Search..."
             value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
+            onChange={(e) => {
+              setSearchText(e.target.value);
+              setCurrentPage(1);
+            }}
           />
-          <Button themeStyle={theme} onClick={exportToCSV}>
-            Export CSV
-          </Button>
+          <Button themeStyle={theme} onClick={handleExport}>Export CSV</Button>
         </div>
-
         <DropdownWrapper ref={dropdownRef}>
-          <DropdownButton onClick={() => setIsOpen(!isOpen)}>
+          <DropdownButton onClick={() => setIsOpen((o) => !o)}>
             Select Columns
           </DropdownButton>
           {isOpen && (
@@ -155,12 +161,7 @@ const Table = ({ columns, data, sortable = false, theme = {} }) => {
                   <th key={col.dataIndex}>
                     <div style={{ display: "flex", flexDirection: "column" }}>
                       <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "0.5rem",
-                          cursor: col.sorter ? "pointer" : "default",
-                        }}
+                        style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: col.sorter ? "pointer" : "default" }}
                         onClick={() => col.sorter && handleSort(col.dataIndex)}
                       >
                         {col.title}
@@ -173,24 +174,18 @@ const Table = ({ columns, data, sortable = false, theme = {} }) => {
                                   : faSortDown
                                 : faSort
                             }
-                            style={{ marginLeft: "0.5rem", color: "#555" }}
                           />
                         )}
                       </div>
-
                       {col.showSearch && (
                         <Input
                           type="text"
-                          placeholder={`Search ${col.title}`}
+                          placeholder={`Filter ${col.title}`}
                           value={filters[col.dataIndex] || ""}
-                          onChange={(e) =>
-                            setFilters((prev) => ({
-                              ...prev,
-                              [col.dataIndex]: e.target.value,
-                            }))
-                          }
-                          style={{ marginTop: "0.25rem", width: "100%" }}
-                        
+                          onChange={(e) => {
+                            setFilters((f) => ({ ...f, [col.dataIndex]: e.target.value }));
+                            setCurrentPage(1);
+                          }}
                         />
                       )}
                     </div>
@@ -198,20 +193,16 @@ const Table = ({ columns, data, sortable = false, theme = {} }) => {
                 ))}
             </tr>
           </thead>
-
           <tbody>
-            {paginatedData.map((row, rowIndex) => (
-              <tr key={rowIndex}>
+            {paginatedData.map((row, ri) => (
+              <tr key={ri}>
                 {columns
                   .filter((col) => visibleColumns.includes(col.dataIndex))
                   .map((col) => (
-                    <td
-                      key={col.dataIndex}
-                      rowSpan={col.onCell?.(row)?.rowSpan || 1}
-                    >
+                    <td key={col.dataIndex}>
                       {col.customRenderer
                         ? col.customRenderer(row[col.dataIndex], row)
-                        : row[col.dataIndex]}
+                        : String(row[col.dataIndex] ?? "-")}
                     </td>
                   ))}
               </tr>
@@ -220,50 +211,18 @@ const Table = ({ columns, data, sortable = false, theme = {} }) => {
         </StyledTable>
       </div>
 
-      <PaginationControls>
-        <Button
-          themeStyle={theme}
-          onClick={() => setCurrentPage(1)}
-          disabled={currentPage === 1}
-        >
-          First
-        </Button>
-        <Button
-          themeStyle={theme}
-          onClick={() => setCurrentPage(Math.max(currentPage - 1, 1))}
-          disabled={currentPage === 1}
-        >
-          Previous
-        </Button>
-        <span>
-          Page {currentPage} of {totalPages}
-        </span>
-        <Button
-          themeStyle={theme}
-          onClick={() => setCurrentPage(Math.min(currentPage + 1, totalPages))}
-          disabled={currentPage === totalPages}
-        >
-          Next
-        </Button>
-        <Button
-          themeStyle={theme}
-          onClick={() => setCurrentPage(totalPages)}
-          disabled={currentPage === totalPages}
-        >
-          Last
-        </Button>
-
-        <Select
-          value={rowsPerPage}
-          onChange={(e) => setRowsPerPage(Number(e.target.value))}
-        >
-          {[5, 10, 25, 50].map((size) => (
-            <option key={size} value={size}>
-              Show {size}
-            </option>
-          ))}
+      <PaginationWrapper>
+        <PaginationControls>
+          <Button themeStyle={theme} onClick={() => setCurrentPage(1)} disabled={currentPage === 1}>First</Button>
+          <Button themeStyle={theme} onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))} disabled={currentPage === 1}>Prev</Button>
+          <span>Page {currentPage} of {totalPages}</span>
+          <Button themeStyle={theme} onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages}>Next</Button>
+          <Button themeStyle={theme} onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages}>Last</Button>
+        </PaginationControls>
+        <Select value={rowsPerPage} onChange={(e) => { setRowsPerPage(Number(e.target.value)); setCurrentPage(1); }}>
+          {[5,10,25,50].map(s => <option key={s} value={s}>{s === data.length ? 'All' : `Show ${s}`}</option>)}
         </Select>
-      </PaginationControls>
+      </PaginationWrapper>
     </TableWrapper>
   );
 };

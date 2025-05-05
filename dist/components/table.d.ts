@@ -1,8 +1,4 @@
 import React from "react";
-declare const Table: ({ columns, data, sortable, theme }: {
-    columns: any;
-    data: any;
-    sortable?: boolean;
-    theme?: {};
-}) => React.JSX.Element;
+import type { TableProps } from "../interface/table";
+declare const Table: React.FC<TableProps>;
 export default Table;
