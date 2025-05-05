@@ -14,14 +14,14 @@ A customizable and reusable table component built with React. Supports dynamic d
 
 ```bash
 npm install react-custom-table
-
+```
 
 ## Or use via Git:
 
 git clone https://github.com/nidhijha111/React-custome-table.git
 
-🧪 Usage
-
+## 🧪 Usage
+```bash
 import React from 'react';
 import CustomTable from 'react-custom-table';
 
@@ -44,4 +44,5 @@ const App = () => (
 );
 
 export default App;
+```
 
