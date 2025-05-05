@@ -1,11 +1,19 @@
 import styled from "styled-components";
 import { TableTheme } from "../../interface/table";
 
-export const TableWrapper = styled.div<{ themeStyle: TableTheme }>`
+const defaultTheme: TableTheme = {
+  textColor: "#333",
+  buttonBg: "#2563eb",
+  borderColor: "#ccc",
+  headerBg: "#f3f4f6",
+  rowHoverColor: "#f9f9f9",
+};
+
+export const TableWrapper = styled.div<{ themeStyle?: TableTheme }>`
   padding: 1rem;
   background-color: #fff;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  color: ${({ themeStyle }) => themeStyle.textColor || "#333"};
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  color: ${({ themeStyle }) => themeStyle?.textColor || defaultTheme.textColor};
   width: 100%;
 `;
 
@@ -34,8 +42,8 @@ export const Select = styled.select`
   border-radius: 4px;
 `;
 
-export const Button = styled.button<{ themeStyle: TableTheme }>`
-  background-color: ${({ themeStyle }) => themeStyle.buttonBg || "#2563eb"};
+export const Button = styled.button<{ themeStyle?: TableTheme }>`
+  background-color: ${({ themeStyle }) => themeStyle?.buttonBg || defaultTheme.buttonBg};
   color: white;
   padding: 0.4rem 0.8rem;
   border-radius: 4px;
@@ -71,7 +79,7 @@ export const DropdownMenu = styled.div`
   background-color: #fff;
   border-radius: 4px;
   border: 1px solid #ddd;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   max-height: 240px;
   overflow-y: auto;
   padding: 0.5rem;
@@ -94,26 +102,26 @@ export const DropdownItem = styled.label`
   }
 `;
 
-export const StyledTable = styled.table<{ themeStyle: TableTheme }>`
+export const StyledTable = styled.table<{ themeStyle?: TableTheme }>`
   width: 100%;
   border-collapse: collapse;
   min-width: 600px;
-  border: 1px solid ${({ themeStyle }) => themeStyle.borderColor || "#ccc"};
+  border: 1px solid ${({ themeStyle }) => themeStyle?.borderColor || defaultTheme.borderColor};
 
   th, td {
     padding: 0.75rem;
-    border: 1px solid ${({ themeStyle }) => themeStyle.borderColor || "#ccc"};
+    border: 1px solid ${({ themeStyle }) => themeStyle?.borderColor || defaultTheme.borderColor};
     text-align: left;
   }
 
   th {
-    background-color: ${({ themeStyle }) => themeStyle.headerBg || "#f3f4f6"};
+    background-color: ${({ themeStyle }) => themeStyle?.headerBg || defaultTheme.headerBg};
     cursor: pointer;
     user-select: none;
   }
 
   tr:hover {
-    background-color: ${({ themeStyle }) => themeStyle.rowHoverColor || "#f9f9f9"};
+    background-color: ${({ themeStyle }) => themeStyle?.rowHoverColor || defaultTheme.rowHoverColor};
   }
 `;
 

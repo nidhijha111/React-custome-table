@@ -26,7 +26,9 @@ const Table = ({ columns, data, sortable = false, theme = {} }) => {
   const [searchText, setSearchText] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
-  const [visibleColumns, setVisibleColumns] = useState(columns.map(c => c.dataIndex));
+  const [visibleColumns, setVisibleColumns] = useState(
+    columns.map((c) => c.dataIndex)
+  );
   const [isOpen, setIsOpen] = useState(false);
   const [filters, setFilters] = useState({});
   const dropdownRef = useRef(null);
@@ -66,14 +68,19 @@ const Table = ({ columns, data, sortable = false, theme = {} }) => {
     if (!sortable) return;
     setSortConfig((prev) =>
       prev?.key === columnKey
-        ? { key: columnKey, direction: prev.direction === "asc" ? "desc" : "asc" }
+        ? {
+            key: columnKey,
+            direction: prev.direction === "asc" ? "desc" : "asc",
+          }
         : { key: columnKey, direction: "asc" }
     );
   };
 
   const exportToCSV = () => {
     const headers = visibleColumns.join(",");
-    const rows = data.map((row) => visibleColumns.map((col) => row[col] ?? "").join(","));
+    const rows = data.map((row) =>
+      visibleColumns.map((col) => row[col] ?? "").join(",")
+    );
     const csvContent = [headers, ...rows].join("\n");
     const blob = new Blob([csvContent], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
@@ -96,7 +103,9 @@ const Table = ({ columns, data, sortable = false, theme = {} }) => {
 
   const toggleColumn = (colKey) => {
     setVisibleColumns((prev) =>
-      prev.includes(colKey) ? prev.filter((c) => c !== colKey) : [...prev, colKey]
+      prev.includes(colKey)
+        ? prev.filter((c) => c !== colKey)
+        : [...prev, colKey]
     );
   };
 
@@ -110,11 +119,15 @@ const Table = ({ columns, data, sortable = false, theme = {} }) => {
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
           />
-          <Button themeStyle={theme} onClick={exportToCSV}>Export CSV</Button>
+          <Button themeStyle={theme} onClick={exportToCSV}>
+            Export CSV
+          </Button>
         </div>
 
         <DropdownWrapper ref={dropdownRef}>
-          <DropdownButton onClick={() => setIsOpen(!isOpen)}>Select Columns</DropdownButton>
+          <DropdownButton onClick={() => setIsOpen(!isOpen)}>
+            Select Columns
+          </DropdownButton>
           {isOpen && (
             <DropdownMenu>
               {columns.map((col) => (
@@ -136,78 +149,121 @@ const Table = ({ columns, data, sortable = false, theme = {} }) => {
         <StyledTable themeStyle={theme}>
           <thead>
             <tr>
-              {columns.filter(col => visibleColumns.includes(col.dataIndex)).map((col) => (
-                <th key={col.dataIndex}>
-                  <div style={{ display: "flex", flexDirection: "column" }}>
-                    <div
-                      style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: col.sorter ? "pointer" : "default" }}
-                      onClick={() => col.sorter && handleSort(col.dataIndex)}
-                    >
-                      {col.title}
-                      {col.sorter && (
-                        <FontAwesomeIcon
-                          icon={
-                            sortConfig?.key === col.dataIndex
-                              ? sortConfig.direction === "asc"
-                                ? faSortUp
-                                : faSortDown
-                              : faSort
+              {columns
+                .filter((col) => visibleColumns.includes(col.dataIndex))
+                .map((col) => (
+                  <th key={col.dataIndex}>
+                    <div style={{ display: "flex", flexDirection: "column" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.5rem",
+                          cursor: col.sorter ? "pointer" : "default",
+                        }}
+                        onClick={() => col.sorter && handleSort(col.dataIndex)}
+                      >
+                        {col.title}
+                        {col.sorter && (
+                          <FontAwesomeIcon
+                            icon={
+                              sortConfig?.key === col.dataIndex
+                                ? sortConfig.direction === "asc"
+                                  ? faSortUp
+                                  : faSortDown
+                                : faSort
+                            }
+                            style={{ marginLeft: "0.5rem", color: "#555" }}
+                          />
+                        )}
+                      </div>
+
+                      {col.showSearch && (
+                        <Input
+                          type="text"
+                          placeholder={`Search ${col.title}`}
+                          value={filters[col.dataIndex] || ""}
+                          onChange={(e) =>
+                            setFilters((prev) => ({
+                              ...prev,
+                              [col.dataIndex]: e.target.value,
+                            }))
                           }
-                          style={{ marginLeft: "0.5rem", color: "#555" }}
+                          style={{ marginTop: "0.25rem", width: "100%" }}
+                        
                         />
                       )}
                     </div>
-
-                    {col.showSearch && (
-                      <Input
-                        type="text"
-                        placeholder={`Search ${col.title}`}
-                        value={filters[col.dataIndex] || ""}
-                        onChange={(e) => setFilters((prev) => ({ ...prev, [col.dataIndex]: e.target.value }))}
-                        style={{ marginTop: "0.25rem", width: "100%" }}
-                      />
-                    )}
-                  </div>
-                </th>
-              ))}
+                  </th>
+                ))}
             </tr>
           </thead>
 
           <tbody>
             {paginatedData.map((row, rowIndex) => (
               <tr key={rowIndex}>
-                {columns.filter(col => visibleColumns.includes(col.dataIndex)).map((col) => (
-                  <td key={col.dataIndex} rowSpan={col.onCell?.(row)?.rowSpan || 1}>
-                    {col.customRenderer ? col.customRenderer(row[col.dataIndex], row) : row[col.dataIndex] ?? "-"}
-                  </td>
-                ))}
+                {columns
+                  .filter((col) => visibleColumns.includes(col.dataIndex))
+                  .map((col) => (
+                    <td
+                      key={col.dataIndex}
+                      rowSpan={col.onCell?.(row)?.rowSpan || 1}
+                    >
+                      {col.customRenderer
+                        ? col.customRenderer(row[col.dataIndex], row)
+                        : row[col.dataIndex]}
+                    </td>
+                  ))}
               </tr>
             ))}
           </tbody>
         </StyledTable>
       </div>
 
-      <PaginationWrapper>
+      <PaginationControls>
+        <Button
+          themeStyle={theme}
+          onClick={() => setCurrentPage(1)}
+          disabled={currentPage === 1}
+        >
+          First
+        </Button>
+        <Button
+          themeStyle={theme}
+          onClick={() => setCurrentPage(Math.max(currentPage - 1, 1))}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </Button>
+        <span>
+          Page {currentPage} of {totalPages}
+        </span>
+        <Button
+          themeStyle={theme}
+          onClick={() => setCurrentPage(Math.min(currentPage + 1, totalPages))}
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </Button>
+        <Button
+          themeStyle={theme}
+          onClick={() => setCurrentPage(totalPages)}
+          disabled={currentPage === totalPages}
+        >
+          Last
+        </Button>
+
         <Select
           value={rowsPerPage}
-          onChange={(e) => {
-            setRowsPerPage(Number(e.target.value));
-            setCurrentPage(1);
-          }}
+          onChange={(e) => setRowsPerPage(Number(e.target.value))}
         >
-          {[10, 25, 50, data.length].map((num) => (
-            <option key={num} value={num}>{num === data.length ? "All" : num}</option>
+          {[5, 10, 25, 50].map((size) => (
+            <option key={size} value={size}>
+              Show {size}
+            </option>
           ))}
         </Select>
-        <span>
-          Showing {(currentPage - 1) * rowsPerPage + 1} to {Math.min(currentPage * rowsPerPage, sortedData.length)} of {sortedData.length} entries
-        </span>
-        <PaginationControls>
-          <Button themeStyle={theme} onClick={() => setCurrentPage((p) => p - 1)} disabled={currentPage === 1}><FiChevronLeft size={20} /></Button>
-          <span>Page {currentPage} of {totalPages}</span>
-          <Button themeStyle={theme} onClick={() => setCurrentPage((p) => p + 1)} disabled={currentPage === totalPages}><FiChevronRight size={20} /></Button>
-        </PaginationControls>
-      </PaginationWrapper>
+      </PaginationControls>
     </TableWrapper>
   );
 };
