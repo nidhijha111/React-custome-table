@@ -1,5 +1,5 @@
 export type TableProps = {
-    columns: string[];
+    columns: Column[];
     data: Record<string, any>[];
     sortable?: boolean;
     theme?: TableTheme;
@@ -12,3 +12,9 @@ export type TableTheme = {
     buttonBg?: string;
     textColor?: string;
 };
+export interface Column {
+    key?: string;
+    label?: string;
+    filter?: boolean;
+    sortable?: boolean;
+}
