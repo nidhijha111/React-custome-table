@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSortUp, faSortDown, faSort, faDownload, faFilter, } from "@fortawesome/free-solid-svg-icons";
-import { Button, DropdownButton, DropdownItem, DropdownMenu, DropdownWrapper, Input, StyledTable, TableWrapper, Toolbar, } from "./styledcomponets/style";
+import { faSortUp, faSortDown, faSort, faDownload, faFilter, faTimes, } from "@fortawesome/free-solid-svg-icons";
+import { Button, DropdownButton, DropdownItem, DropdownMenu, DropdownWrapper, Input, StyledTable, TableWrapper, Toolbar } from "./styledcomponets/style";
+import Pagination from "./pagination";
 const Table = ({ columns, data, sortable = false, theme = {}, }) => {
     const [sortConfig, setSortConfig] = useState(null);
     const [searchText, setSearchText] = useState("");
@@ -149,20 +150,19 @@ const Table = ({ columns, data, sortable = false, theme = {}, }) => {
                                         maxHeight: "200px",
                                         overflowY: "auto",
                                     } },
-                                    React.createElement("button", { style: {
-                                            width: "100%",
-                                            marginBottom: "10px",
-                                            background: "#f44336",
-                                            color: "#fff",
-                                            padding: "8px",
+                                    React.createElement("button", { 
+                                        // onClick={() => setActiveFilterColumn(null)}
+                                        style: {
+                                            position: "absolute",
+                                            top: "5px",
+                                            right: "5px",
+                                            background: "transparent",
                                             border: "none",
-                                            borderRadius: "4px",
+                                            color: "#000",
+                                            fontSize: "20px",
                                             cursor: "pointer",
-                                        }, onClick: () => {
-                                            // Clear selected filter for this column
-                                            setCheckedFilterOptions((prev) => (Object.assign(Object.assign({}, prev), { [col.dataIndex]: [] })));
-                                            setCurrentPage(1); // Reset to the first page
-                                        } }, "Clear Filter"),
+                                        }, onClick: () => setActiveFilterColumn(null) },
+                                        React.createElement(FontAwesomeIcon, { icon: faTimes })),
                                     getUniqueColumnValues(data, col.dataIndex).map((val) => {
                                         var _a, _b;
                                         return (React.createElement("label", { key: val, style: { display: "block" } },
@@ -179,23 +179,37 @@ const Table = ({ columns, data, sortable = false, theme = {}, }) => {
                                                 } }),
                                             val));
                                     }),
-                                    React.createElement("button", { style: {
-                                            width: "100%",
-                                            marginTop: "10px",
-                                            background: "#4CAF50",
-                                            color: "#fff",
-                                            padding: "8px",
-                                            border: "none",
-                                            borderRadius: "4px",
-                                            cursor: "pointer",
-                                        }, onClick: () => {
-                                            // Apply the filter logic (filters are already applied by selecting checkboxes)
-                                            setActiveFilterColumn(null); // Close the filter dropdown after applying
-                                            setCurrentPage(1); // Reset to the first page after applying the filter
-                                        } }, "Apply Filter"),
-                                    React.createElement("button", { onClick: () => setActiveFilterColumn(null) }, "Close"))))))))))),
+                                    React.createElement("div", null,
+                                        React.createElement("button", { style: {
+                                                width: "100%",
+                                                marginBottom: "10px",
+                                                background: "#f44336",
+                                                color: "#fff",
+                                                padding: "8px",
+                                                border: "none",
+                                                borderRadius: "4px",
+                                                cursor: "pointer",
+                                            }, onClick: () => {
+                                                // Clear selected filter for this column
+                                                setCheckedFilterOptions((prev) => (Object.assign(Object.assign({}, prev), { [col.dataIndex]: [] })));
+                                                setCurrentPage(1); // Reset to the first page
+                                            } }, "Clear Filter"),
+                                        React.createElement("button", { style: {
+                                                width: "100%",
+                                                marginTop: "10px",
+                                                background: "#4CAF50",
+                                                color: "#fff",
+                                                padding: "8px",
+                                                border: "none",
+                                                borderRadius: "4px",
+                                                cursor: "pointer",
+                                            }, onClick: () => {
+                                                setActiveFilterColumn(null);
+                                                setCurrentPage(1);
+                                            } }, "Apply Filter")))))))))))),
                 React.createElement("tbody", null, paginatedData.map((row, rowIndex) => (React.createElement("tr", { key: rowIndex }, columns
                     .filter((col) => visibleColumns.includes(col.dataIndex))
-                    .map((col) => (React.createElement("td", { key: col.dataIndex }, row[col.dataIndex])))))))))));
+                    .map((col) => (React.createElement("td", { key: col.dataIndex }, row[col.dataIndex]))))))))),
+        React.createElement(Pagination, { currentPage: currentPage, totalPages: totalPages, setCurrentPage: setCurrentPage, setRowsPerPage: setRowsPerPage, rowsPerPage: rowsPerPage, data: data, theme: theme })));
 };
 export default Table;

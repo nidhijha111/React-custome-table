@@ -18,9 +18,6 @@ import {
   StyledTable,
   TableWrapper,
   Toolbar,
-  PaginationWrapper,
-  Select,
-  PaginationControls,
 } from "./styledcomponets/style";
 import type { TableProps } from "../interface/table";
 import Pagination from "./pagination";
@@ -168,29 +165,31 @@ const Table: React.FC<TableProps> = ({
               setCurrentPage(1);
             }}
           />
+        </div>
+        <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
           <Button themeStyle={theme} onClick={handleExport}>
             <FontAwesomeIcon icon={faDownload} /> Export CSV
           </Button>
+          <DropdownWrapper ref={dropdownRef}>
+            <DropdownButton onClick={() => setIsOpen((o) => !o)}>
+              Select Columns
+            </DropdownButton>
+            {isOpen && (
+              <DropdownMenu>
+                {columns.map((col) => (
+                  <DropdownItem key={col.dataIndex}>
+                    <input
+                      type="checkbox"
+                      checked={visibleColumns.includes(col.dataIndex)}
+                      onChange={() => toggleColumn(col.dataIndex)}
+                    />
+                    {col.title}
+                  </DropdownItem>
+                ))}
+              </DropdownMenu>
+            )}
+          </DropdownWrapper>
         </div>
-        <DropdownWrapper ref={dropdownRef}>
-          <DropdownButton onClick={() => setIsOpen((o) => !o)}>
-            Select Columns
-          </DropdownButton>
-          {isOpen && (
-            <DropdownMenu>
-              {columns.map((col) => (
-                <DropdownItem key={col.dataIndex}>
-                  <input
-                    type="checkbox"
-                    checked={visibleColumns.includes(col.dataIndex)}
-                    onChange={() => toggleColumn(col.dataIndex)}
-                  />
-                  {col.title}
-                </DropdownItem>
-              ))}
-            </DropdownMenu>
-          )}
-        </DropdownWrapper>
       </Toolbar>
 
       <div style={{ overflowX: "auto" }}>
