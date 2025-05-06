@@ -1,11 +1,12 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { FaAngleDoubleLeft, FaAngleLeft, FaAngleRight, FaAngleDoubleRight } from "react-icons/fa";
 import {
   faSortUp,
   faSortDown,
   faSort,
   faDownload,
+  faFilter,
+  faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import {
   Button,
@@ -14,15 +15,15 @@ import {
   DropdownMenu,
   DropdownWrapper,
   Input,
-  PaginationControls,
-  PaginationWrapper,
-  Select,
   StyledTable,
   TableWrapper,
   Toolbar,
+  PaginationWrapper,
+  Select,
+  PaginationControls,
 } from "./styledcomponets/style";
 import type { TableProps } from "../interface/table";
-import { faFilter } from "@fortawesome/free-solid-svg-icons";
+import Pagination from "./pagination";
 
 const Table: React.FC<TableProps> = ({
   columns,
@@ -30,32 +31,62 @@ const Table: React.FC<TableProps> = ({
   sortable = false,
   theme = {},
 }) => {
-  const [sortConfig, setSortConfig] = useState<{
+  const [sortConfig, setSortConfig] = useState<null | {
     key: string;
     direction: "asc" | "desc";
-  } | null>(null);
-  const [searchText, setSearchText] = useState<string>("");
-  const [rowsPerPage, setRowsPerPage] = useState<number>(10);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [visibleColumns, setVisibleColumns] = useState<string[]>(
+  }>(null);
+  const [searchText, setSearchText] = useState("");
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [visibleColumns, setVisibleColumns] = useState(
     columns.map((c) => c.dataIndex)
   );
   const [filters, setFilters] = useState<Record<string, string>>({});
+  const [isOpen, setIsOpen] = useState(false);
+  const [activeFilterColumn, setActiveFilterColumn] = useState<string | null>(
+    null
+  );
+  const [checkedFilterOptions, setCheckedFilterOptions] = useState<
+    Record<string, string[]>
+  >({});
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [filterOpenCol, setFilterOpenCol] = useState<string | null>(null);
+  const filterDropdownRef = useRef<HTMLDivElement>(null);
 
-  // Combined filtering: global search + column filters
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as Node;
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(target) &&
+        filterDropdownRef.current &&
+        !filterDropdownRef.current.contains(target)
+      ) {
+        setIsOpen(false);
+        setActiveFilterColumn(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const toggleColumn = (key: string) => {
+    setVisibleColumns((prev) =>
+      prev.includes(key) ? prev.filter((c) => c !== key) : [...prev, key]
+    );
+  };
+
+  const getUniqueColumnValues = (data: any[], key: string) => {
+    return [...new Set(data.map((row) => row[key]))];
+  };
+
   const searchData = useMemo(() => {
     return data.filter((row) => {
-      // global search
       const matchesGlobal =
         !searchText ||
         Object.values(row).some((val) =>
           String(val).toLowerCase().includes(searchText.toLowerCase())
         );
       if (!matchesGlobal) return false;
-      // column filters
       return visibleColumns.every((colKey) => {
         const filterValue = filters[colKey]?.toLowerCase() || "";
         const rowValue = String(row[colKey] ?? "").toLowerCase();
@@ -64,7 +95,6 @@ const Table: React.FC<TableProps> = ({
     });
   }, [data, searchText, filters, visibleColumns]);
 
-  // Sorting
   const sortedData = useMemo(() => {
     if (!sortable || !sortConfig) return searchData;
     return [...searchData].sort((a, b) => {
@@ -79,15 +109,25 @@ const Table: React.FC<TableProps> = ({
     });
   }, [searchData, sortConfig, sortable]);
 
-  // Pagination slice
+  const finalFilteredData = useMemo(() => {
+    return sortedData.filter((row) =>
+      Object.entries(checkedFilterOptions).every(([key, selectedVals]) => {
+        if (!selectedVals || selectedVals.length === 0) return true;
+        return selectedVals.includes(row[key]);
+      })
+    );
+  }, [sortedData, checkedFilterOptions]);
+
   const paginatedData = useMemo(() => {
     const start = (currentPage - 1) * rowsPerPage;
-    return sortedData.slice(start, start + rowsPerPage);
-  }, [sortedData, currentPage, rowsPerPage]);
+    return finalFilteredData.slice(start, start + rowsPerPage);
+  }, [finalFilteredData, currentPage, rowsPerPage]);
 
-  const totalPages = Math.max(1, Math.ceil(sortedData.length / rowsPerPage));
+  const totalPages = Math.max(
+    1,
+    Math.ceil(finalFilteredData.length / rowsPerPage)
+  );
 
-  // Handlers
   const handleSort = (columnKey: string) => {
     if (!sortable) return;
     setSortConfig((prev) =>
@@ -102,7 +142,7 @@ const Table: React.FC<TableProps> = ({
 
   const handleExport = () => {
     const headers = visibleColumns.join(",");
-    const rowsCsv = sortedData.map((row) =>
+    const rowsCsv = finalFilteredData.map((row) =>
       visibleColumns.map((col) => row[col] ?? "").join(",")
     );
     const csvContent = [headers, ...rowsCsv].join("\n");
@@ -113,25 +153,6 @@ const Table: React.FC<TableProps> = ({
     link.download = "table_data.csv";
     link.click();
     URL.revokeObjectURL(url);
-  };
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(e.target as Node)
-      ) {
-        // close
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const toggleColumn = (key: string) => {
-    setVisibleColumns((prev) =>
-      prev.includes(key) ? prev.filter((c) => c !== key) : [...prev, key]
-    );
   };
 
   return (
@@ -218,17 +239,126 @@ const Table: React.FC<TableProps> = ({
                         />
                       )}
                       {col.showFilter && (
-                        <FontAwesomeIcon
-                          icon={faFilter}
-                          style={{ cursor: "pointer" }}
-                          onClick={() =>
-                            setFilterOpenCol(
-                              filterOpenCol === col.dataIndex
-                                ? null
-                                : col.dataIndex
-                            )
-                          }
-                        />
+                        <div style={{ position: "relative" }}>
+                          <FontAwesomeIcon
+                            icon={faFilter}
+                            style={{ cursor: "pointer" }}
+                            onClick={() =>
+                              setActiveFilterColumn(
+                                activeFilterColumn === col.dataIndex
+                                  ? null
+                                  : col.dataIndex
+                              )
+                            }
+                          />
+                          {activeFilterColumn === col.dataIndex && (
+                            <div
+                              ref={filterDropdownRef}
+                              style={{
+                                position: "absolute",
+                                top: "1.5rem",
+                                left: 0,
+                                background: "#fff",
+                                border: "1px solid #ccc",
+                                padding: "0.5rem",
+                                zIndex: 10,
+                                maxHeight: "200px",
+                                overflowY: "auto",
+                              }}
+                            >
+                              {/* Clear Filter Button */}
+                              <button
+                                // onClick={() => setActiveFilterColumn(null)}
+                                style={{
+                                  position: "absolute",
+                                  top: "5px",
+                                  right: "5px",
+                                  background: "transparent",
+                                  border: "none",
+                                  color: "#000",
+                                  fontSize: "20px",
+                                  cursor: "pointer",
+                                }}
+                                onClick={() => setActiveFilterColumn(null)}
+                              >
+                                <FontAwesomeIcon icon={faTimes} />
+                              </button>
+                              {/* Render Filter Options */}
+                              {getUniqueColumnValues(data, col.dataIndex).map(
+                                (val) => (
+                                  <label key={val} style={{ display: "block" }}>
+                                    <input
+                                      type="checkbox"
+                                      checked={
+                                        checkedFilterOptions[
+                                          col.dataIndex
+                                        ]?.includes(val) ?? false
+                                      }
+                                      onChange={(e) => {
+                                        const checked = e.target.checked;
+                                        setCheckedFilterOptions((prev) => {
+                                          const existing =
+                                            prev[col.dataIndex] || [];
+                                          const updated = checked
+                                            ? [...existing, val]
+                                            : existing.filter((v) => v !== val);
+                                          return {
+                                            ...prev,
+                                            [col.dataIndex]: updated,
+                                          };
+                                        });
+                                        setCurrentPage(1); // Reset to the first page whenever a selection is made
+                                      }}
+                                    />
+                                    {val}
+                                  </label>
+                                )
+                              )}
+                              <div>
+                                <button
+                                  style={{
+                                    width: "100%",
+                                    marginBottom: "10px",
+                                    background: "#f44336",
+                                    color: "#fff",
+                                    padding: "8px",
+                                    border: "none",
+                                    borderRadius: "4px",
+                                    cursor: "pointer",
+                                  }}
+                                  onClick={() => {
+                                    // Clear selected filter for this column
+                                    setCheckedFilterOptions((prev) => ({
+                                      ...prev,
+                                      [col.dataIndex]: [], // Reset the filter for this column
+                                    }));
+                                    setCurrentPage(1); // Reset to the first page
+                                  }}
+                                >
+                                  Clear Filter
+                                </button>
+                                <button
+                                  style={{
+                                    width: "100%",
+                                    marginTop: "10px",
+                                    background: "#4CAF50",
+                                    color: "#fff",
+                                    padding: "8px",
+                                    border: "none",
+                                    borderRadius: "4px",
+                                    cursor: "pointer",
+                                  }}
+                                  onClick={() => {
+                                    setActiveFilterColumn(null);
+                                    setCurrentPage(1);
+                                  }}
+                                >
+                                  Apply Filter
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       )}
                     </div>
                   </th>
@@ -236,16 +366,12 @@ const Table: React.FC<TableProps> = ({
             </tr>
           </thead>
           <tbody>
-            {paginatedData.map((row, ri) => (
-              <tr key={ri}>
+            {paginatedData.map((row, rowIndex) => (
+              <tr key={rowIndex}>
                 {columns
                   .filter((col) => visibleColumns.includes(col.dataIndex))
                   .map((col) => (
-                    <td key={col.dataIndex}>
-                      {col.customRenderer
-                        ? col.customRenderer(row[col.dataIndex], row)
-                        : String(row[col.dataIndex] ?? "-")}
-                    </td>
+                    <td key={col.dataIndex}>{row[col.dataIndex]}</td>
                   ))}
               </tr>
             ))}
@@ -253,54 +379,15 @@ const Table: React.FC<TableProps> = ({
         </StyledTable>
       </div>
 
-      <PaginationWrapper>
-        <Select
-          value={rowsPerPage}
-          onChange={(e) => {
-            setRowsPerPage(Number(e.target.value));
-            setCurrentPage(1);
-          }}
-        >
-          {[5, 10, 25, 50].map((s) => (
-            <option key={s} value={s}>
-              {s === data.length ? "All" : `Show ${s}`}
-            </option>
-          ))}
-        </Select>
-        <PaginationControls>
-          <Button
-            themeStyle={theme}
-            onClick={() => setCurrentPage(1)}
-            disabled={currentPage === 1}
-          >
-            <FaAngleDoubleLeft />
-          </Button>
-          <Button
-            themeStyle={theme}
-            onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-            disabled={currentPage === 1}
-          >
-            <FaAngleLeft />
-          </Button>
-          <span>
-            Page {currentPage} of {totalPages}
-          </span>
-          <Button
-            themeStyle={theme}
-            onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
-            disabled={currentPage === totalPages}
-          >
-            <FaAngleRight />
-          </Button>
-          <Button
-            themeStyle={theme}
-            onClick={() => setCurrentPage(totalPages)}
-            disabled={currentPage === totalPages}
-          >
-            <FaAngleDoubleRight />
-          </Button>
-        </PaginationControls>
-      </PaginationWrapper>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        setCurrentPage={setCurrentPage}
+        setRowsPerPage={setRowsPerPage}
+        rowsPerPage={rowsPerPage}
+        data={data}
+        theme={theme}
+      />
     </TableWrapper>
   );
 };
