@@ -75,7 +75,7 @@ import CustomTable from 'react-custom-table';
 
 const App = () => (
   <div>
-    <h1>User Table</h1>
+    <h1>Table</h1>
     <CustomTable data={data} columns={columns} />
   </div>
 );
