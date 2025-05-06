@@ -1,8 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSortUp, faSortDown, faSort, } from "@fortawesome/free-solid-svg-icons";
+import { FaAngleDoubleLeft, FaAngleLeft, FaAngleRight, FaAngleDoubleRight } from "react-icons/fa";
+import { faSortUp, faSortDown, faSort, faDownload, } from "@fortawesome/free-solid-svg-icons";
 import { Button, DropdownButton, DropdownItem, DropdownMenu, DropdownWrapper, Input, PaginationControls, PaginationWrapper, Select, StyledTable, TableWrapper, Toolbar, } from "./styledcomponets/style";
-const Table = ({ columns, data, sortable = false, theme = {} }) => {
+import { faFilter } from "@fortawesome/free-solid-svg-icons";
+const Table = ({ columns, data, sortable = false, theme = {}, }) => {
     const [sortConfig, setSortConfig] = useState(null);
     const [searchText, setSearchText] = useState("");
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -11,8 +13,9 @@ const Table = ({ columns, data, sortable = false, theme = {} }) => {
     const [filters, setFilters] = useState({});
     const dropdownRef = useRef(null);
     const [isOpen, setIsOpen] = useState(false);
+    const [filterOpenCol, setFilterOpenCol] = useState(null);
     // Combined filtering: global search + column filters
-    const filteredData = useMemo(() => {
+    const searchData = useMemo(() => {
         return data.filter((row) => {
             // global search
             const matchesGlobal = !searchText ||
@@ -31,8 +34,8 @@ const Table = ({ columns, data, sortable = false, theme = {} }) => {
     // Sorting
     const sortedData = useMemo(() => {
         if (!sortable || !sortConfig)
-            return filteredData;
-        return [...filteredData].sort((a, b) => {
+            return searchData;
+        return [...searchData].sort((a, b) => {
             const aVal = a[sortConfig.key];
             const bVal = b[sortConfig.key];
             if (typeof aVal === "number" && typeof bVal === "number") {
@@ -42,7 +45,7 @@ const Table = ({ columns, data, sortable = false, theme = {} }) => {
                 ? String(aVal).localeCompare(String(bVal))
                 : String(bVal).localeCompare(String(aVal));
         });
-    }, [filteredData, sortConfig, sortable]);
+    }, [searchData, sortConfig, sortable]);
     // Pagination slice
     const paginatedData = useMemo(() => {
         const start = (currentPage - 1) * rowsPerPage;
@@ -54,7 +57,10 @@ const Table = ({ columns, data, sortable = false, theme = {} }) => {
         if (!sortable)
             return;
         setSortConfig((prev) => (prev === null || prev === void 0 ? void 0 : prev.key) === columnKey
-            ? { key: columnKey, direction: prev.direction === "asc" ? "desc" : "asc" }
+            ? {
+                key: columnKey,
+                direction: prev.direction === "asc" ? "desc" : "asc",
+            }
             : { key: columnKey, direction: "asc" });
     };
     const handleExport = () => {
@@ -71,7 +77,8 @@ const Table = ({ columns, data, sortable = false, theme = {} }) => {
     };
     useEffect(() => {
         const handleClickOutside = (e) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+            if (dropdownRef.current &&
+                !dropdownRef.current.contains(e.target)) {
                 // close
             }
         };
@@ -88,7 +95,9 @@ const Table = ({ columns, data, sortable = false, theme = {} }) => {
                         setSearchText(e.target.value);
                         setCurrentPage(1);
                     } }),
-                React.createElement(Button, { themeStyle: theme, onClick: handleExport }, "Export CSV")),
+                React.createElement(Button, { themeStyle: theme, onClick: handleExport },
+                    React.createElement(FontAwesomeIcon, { icon: faDownload }),
+                    " Export CSV")),
             React.createElement(DropdownWrapper, { ref: dropdownRef },
                 React.createElement(DropdownButton, { onClick: () => setIsOpen((o) => !o) }, "Select Columns"),
                 isOpen && (React.createElement(DropdownMenu, null, columns.map((col) => (React.createElement(DropdownItem, { key: col.dataIndex },
@@ -101,7 +110,12 @@ const Table = ({ columns, data, sortable = false, theme = {} }) => {
                         .filter((col) => visibleColumns.includes(col.dataIndex))
                         .map((col) => (React.createElement("th", { key: col.dataIndex },
                         React.createElement("div", { style: { display: "flex", flexDirection: "column" } },
-                            React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "0.5rem", cursor: col.sorter ? "pointer" : "default" }, onClick: () => col.sorter && handleSort(col.dataIndex) },
+                            React.createElement("div", { style: {
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "0.5rem",
+                                    cursor: col.sorter ? "pointer" : "default",
+                                }, onClick: () => col.sorter && handleSort(col.dataIndex) },
                                 col.title,
                                 col.sorter && (React.createElement(FontAwesomeIcon, { icon: (sortConfig === null || sortConfig === void 0 ? void 0 : sortConfig.key) === col.dataIndex
                                         ? sortConfig.direction === "asc"
@@ -111,7 +125,10 @@ const Table = ({ columns, data, sortable = false, theme = {} }) => {
                             col.showSearch && (React.createElement(Input, { type: "text", placeholder: `Filter ${col.title}`, value: filters[col.dataIndex] || "", onChange: (e) => {
                                     setFilters((f) => (Object.assign(Object.assign({}, f), { [col.dataIndex]: e.target.value })));
                                     setCurrentPage(1);
-                                } })))))))),
+                                } })),
+                            col.showFilter && (React.createElement(FontAwesomeIcon, { icon: faFilter, style: { cursor: "pointer" }, onClick: () => setFilterOpenCol(filterOpenCol === col.dataIndex
+                                    ? null
+                                    : col.dataIndex) })))))))),
                 React.createElement("tbody", null, paginatedData.map((row, ri) => (React.createElement("tr", { key: ri }, columns
                     .filter((col) => visibleColumns.includes(col.dataIndex))
                     .map((col) => {
@@ -121,16 +138,23 @@ const Table = ({ columns, data, sortable = false, theme = {} }) => {
                         : String((_a = row[col.dataIndex]) !== null && _a !== void 0 ? _a : "-")));
                 }))))))),
         React.createElement(PaginationWrapper, null,
+            React.createElement(Select, { value: rowsPerPage, onChange: (e) => {
+                    setRowsPerPage(Number(e.target.value));
+                    setCurrentPage(1);
+                } }, [5, 10, 25, 50].map((s) => (React.createElement("option", { key: s, value: s }, s === data.length ? "All" : `Show ${s}`)))),
             React.createElement(PaginationControls, null,
-                React.createElement(Button, { themeStyle: theme, onClick: () => setCurrentPage(1), disabled: currentPage === 1 }, "First"),
-                React.createElement(Button, { themeStyle: theme, onClick: () => setCurrentPage((p) => Math.max(p - 1, 1)), disabled: currentPage === 1 }, "Prev"),
+                React.createElement(Button, { themeStyle: theme, onClick: () => setCurrentPage(1), disabled: currentPage === 1 },
+                    React.createElement(FaAngleDoubleLeft, null)),
+                React.createElement(Button, { themeStyle: theme, onClick: () => setCurrentPage((p) => Math.max(p - 1, 1)), disabled: currentPage === 1 },
+                    React.createElement(FaAngleLeft, null)),
                 React.createElement("span", null,
                     "Page ",
                     currentPage,
                     " of ",
                     totalPages),
-                React.createElement(Button, { themeStyle: theme, onClick: () => setCurrentPage((p) => Math.min(p + 1, totalPages)), disabled: currentPage === totalPages }, "Next"),
-                React.createElement(Button, { themeStyle: theme, onClick: () => setCurrentPage(totalPages), disabled: currentPage === totalPages }, "Last")),
-            React.createElement(Select, { value: rowsPerPage, onChange: (e) => { setRowsPerPage(Number(e.target.value)); setCurrentPage(1); } }, [5, 10, 25, 50].map(s => React.createElement("option", { key: s, value: s }, s === data.length ? 'All' : `Show ${s}`))))));
+                React.createElement(Button, { themeStyle: theme, onClick: () => setCurrentPage((p) => Math.min(p + 1, totalPages)), disabled: currentPage === totalPages },
+                    React.createElement(FaAngleRight, null)),
+                React.createElement(Button, { themeStyle: theme, onClick: () => setCurrentPage(totalPages), disabled: currentPage === totalPages },
+                    React.createElement(FaAngleDoubleRight, null))))));
 };
 export default Table;

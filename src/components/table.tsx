@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { FaAngleDoubleLeft, FaAngleLeft, FaAngleRight, FaAngleDoubleRight } from "react-icons/fa";
 import {
   faSortUp,
   faSortDown,
@@ -46,7 +46,7 @@ const Table: React.FC<TableProps> = ({
   const [filterOpenCol, setFilterOpenCol] = useState<string | null>(null);
 
   // Combined filtering: global search + column filters
-  const filteredData = useMemo(() => {
+  const searchData = useMemo(() => {
     return data.filter((row) => {
       // global search
       const matchesGlobal =
@@ -66,8 +66,8 @@ const Table: React.FC<TableProps> = ({
 
   // Sorting
   const sortedData = useMemo(() => {
-    if (!sortable || !sortConfig) return filteredData;
-    return [...filteredData].sort((a, b) => {
+    if (!sortable || !sortConfig) return searchData;
+    return [...searchData].sort((a, b) => {
       const aVal = a[sortConfig.key];
       const bVal = b[sortConfig.key];
       if (typeof aVal === "number" && typeof bVal === "number") {
@@ -77,7 +77,7 @@ const Table: React.FC<TableProps> = ({
         ? String(aVal).localeCompare(String(bVal))
         : String(bVal).localeCompare(String(aVal));
     });
-  }, [filteredData, sortConfig, sortable]);
+  }, [searchData, sortConfig, sortable]);
 
   // Pagination slice
   const paginatedData = useMemo(() => {
@@ -273,14 +273,14 @@ const Table: React.FC<TableProps> = ({
             onClick={() => setCurrentPage(1)}
             disabled={currentPage === 1}
           >
-            First
+            <FaAngleDoubleLeft />
           </Button>
           <Button
             themeStyle={theme}
             onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
             disabled={currentPage === 1}
           >
-            Prev
+            <FaAngleLeft />
           </Button>
           <span>
             Page {currentPage} of {totalPages}
@@ -290,14 +290,14 @@ const Table: React.FC<TableProps> = ({
             onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
             disabled={currentPage === totalPages}
           >
-            Next
+            <FaAngleRight />
           </Button>
           <Button
             themeStyle={theme}
             onClick={() => setCurrentPage(totalPages)}
             disabled={currentPage === totalPages}
           >
-            Last
+            <FaAngleDoubleRight />
           </Button>
         </PaginationControls>
       </PaginationWrapper>
