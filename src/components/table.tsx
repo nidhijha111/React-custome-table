@@ -21,6 +21,7 @@ import {
 } from "./styledcomponets/style";
 import type { TableProps } from "../interface/table";
 import Pagination from "./pagination";
+import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
 
 const Table: React.FC<TableProps> = ({
   columns,
@@ -213,7 +214,7 @@ const Table: React.FC<TableProps> = ({
                         {col.title}
                         {col.sorter && (
                           <FontAwesomeIcon
-                            icon={faSort}
+                            icon={faArrowUp}
                             style={{
                               fontSize: "0.75rem",
                               cursor: "pointer",
@@ -278,13 +279,14 @@ const Table: React.FC<TableProps> = ({
                                   padding: "0.5rem",
                                   zIndex: 10,
                                   maxHeight: "200px",
+                                  width:"100%",
                                   overflowY: "auto",
                                 }}
                               >
                                 <button
                                   style={{
                                     position: "absolute",
-                                    top: "5px",
+                                    top: "5px", 
                                     right: "5px",
                                     background: "transparent",
                                     border: "none",

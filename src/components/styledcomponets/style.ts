@@ -12,7 +12,7 @@ const defaultTheme: TableTheme = {
 export const TableWrapper = styled.div<{ themeStyle?: TableTheme }>`
   padding: 1rem;
   background-color: #fff;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); */
   color: ${({ themeStyle }) => themeStyle?.textColor || defaultTheme.textColor};
   width: 100%;
 `;
@@ -106,6 +106,7 @@ export const StyledTable = styled.table<{ themeStyle?: TableTheme }>`
   width: 100%;
   border-collapse: collapse;
   min-width: 600px;
+  border-radius:10px;
   border: 1px solid ${({ themeStyle }) => themeStyle?.borderColor || defaultTheme.borderColor};
 
   th, td {

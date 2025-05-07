@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSortUp, faSortDown, faSort, faDownload, faFilter, faTimes, } from "@fortawesome/free-solid-svg-icons";
+import { faDownload, faFilter, faTimes, } from "@fortawesome/free-solid-svg-icons";
 import { Button, DropdownButton, DropdownItem, DropdownMenu, DropdownWrapper, Input, StyledTable, TableWrapper, Toolbar, } from "./styledcomponets/style";
 import Pagination from "./pagination";
+import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
 const Table = ({ columns, data, sortable = false, theme = {}, }) => {
     const [sortConfig, setSortConfig] = useState(null);
     const [searchText, setSearchText] = useState("");
@@ -127,15 +128,23 @@ const Table = ({ columns, data, sortable = false, theme = {}, }) => {
                                     cursor: col.sorter ? "pointer" : "default",
                                 }, onClick: () => col.sorter && handleSort(col.dataIndex) },
                                 col.title,
-                                col.sorter && (React.createElement(FontAwesomeIcon, { icon: (sortConfig === null || sortConfig === void 0 ? void 0 : sortConfig.key) === col.dataIndex
-                                        ? sortConfig.direction === "asc"
-                                            ? faSortUp
-                                            : faSortDown
-                                        : faSort }))),
+                                col.sorter && (React.createElement(FontAwesomeIcon, { icon: faArrowUp, style: {
+                                        fontSize: "0.75rem",
+                                        cursor: "pointer",
+                                        transform: (sortConfig === null || sortConfig === void 0 ? void 0 : sortConfig.key) === col.dataIndex &&
+                                            sortConfig.direction === "desc"
+                                            ? "rotate(180deg)"
+                                            : "none",
+                                        color: (sortConfig === null || sortConfig === void 0 ? void 0 : sortConfig.key) === col.dataIndex
+                                            ? "#000"
+                                            : "#ccc",
+                                        transition: "transform 0.2s ease",
+                                    } }))),
                             React.createElement("div", { style: {
                                     display: "flex",
                                     gap: "0.75rem",
                                     flexWrap: "wrap",
+                                    width: "100%",
                                 } },
                                 col.showSearch && (React.createElement(Input, { type: "text", placeholder: `Filter ${col.title}`, value: filters[col.dataIndex] || "", onChange: (e) => {
                                         setFilters((f) => (Object.assign(Object.assign({}, f), { [col.dataIndex]: e.target.value })));
@@ -156,9 +165,7 @@ const Table = ({ columns, data, sortable = false, theme = {}, }) => {
                                             maxHeight: "200px",
                                             overflowY: "auto",
                                         } },
-                                        React.createElement("button", { 
-                                            // onClick={() => setActiveFilterColumn(null)}
-                                            style: {
+                                        React.createElement("button", { style: {
                                                 position: "absolute",
                                                 top: "5px",
                                                 right: "5px",
@@ -181,7 +188,7 @@ const Table = ({ columns, data, sortable = false, theme = {}, }) => {
                                                                 : existing.filter((v) => v !== val);
                                                             return Object.assign(Object.assign({}, prev), { [col.dataIndex]: updated });
                                                         });
-                                                        setCurrentPage(1); // Reset to the first page whenever a selection is made
+                                                        setCurrentPage(1);
                                                     } }),
                                                 val));
                                         }),
@@ -196,9 +203,8 @@ const Table = ({ columns, data, sortable = false, theme = {}, }) => {
                                                     borderRadius: "4px",
                                                     cursor: "pointer",
                                                 }, onClick: () => {
-                                                    // Clear selected filter for this column
                                                     setCheckedFilterOptions((prev) => (Object.assign(Object.assign({}, prev), { [col.dataIndex]: [] })));
-                                                    setCurrentPage(1); // Reset to the first page
+                                                    setCurrentPage(1);
                                                 } }, "Clear Filter"),
                                             React.createElement("button", { style: {
                                                     width: "100%",
