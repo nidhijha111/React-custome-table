@@ -9,7 +9,7 @@ const defaultTheme = {
 export const TableWrapper = styled.div `
   padding: 1rem;
   background-color: #fff;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); */
   color: ${({ themeStyle }) => (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.textColor) || defaultTheme.textColor};
   width: 100%;
 `;
@@ -94,6 +94,7 @@ export const StyledTable = styled.table `
   width: 100%;
   border-collapse: collapse;
   min-width: 600px;
+  border-radius:10px;
   border: 1px solid ${({ themeStyle }) => (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.borderColor) || defaultTheme.borderColor};
 
   th, td {

@@ -163,6 +163,7 @@ const Table = ({ columns, data, sortable = false, theme = {}, }) => {
                                             padding: "0.5rem",
                                             zIndex: 10,
                                             maxHeight: "200px",
+                                            width: "100%",
                                             overflowY: "auto",
                                         } },
                                         React.createElement("button", { style: {

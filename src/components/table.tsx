@@ -238,6 +238,7 @@ const Table: React.FC<TableProps> = ({
                           gap: "0.75rem",
                           flexWrap: "wrap",
                           width: "100%",
+                          position: "relative",
                         }}
                       >
                         {col.showSearch && (
@@ -255,7 +256,7 @@ const Table: React.FC<TableProps> = ({
                           />
                         )}
                         {col.showFilter && (
-                          <div style={{ position: "relative" }}>
+                          <div>
                             <FontAwesomeIcon
                               icon={faFilter}
                               style={{ cursor: "pointer" }}
@@ -279,14 +280,14 @@ const Table: React.FC<TableProps> = ({
                                   padding: "0.5rem",
                                   zIndex: 10,
                                   maxHeight: "200px",
-                                  width:"100%",
+                                  width: "100%",
                                   overflowY: "auto",
                                 }}
                               >
                                 <button
                                   style={{
                                     position: "absolute",
-                                    top: "5px", 
+                                    top: "5px",
                                     right: "5px",
                                     background: "transparent",
                                     border: "none",
