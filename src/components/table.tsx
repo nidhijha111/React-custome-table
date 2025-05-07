@@ -280,7 +280,6 @@ const Table: React.FC<TableProps> = ({
                                   padding: "0.5rem",
                                   zIndex: 10,
                                   maxHeight: "200px",
-                                  width: "100%",
                                   overflowY: "auto",
                                 }}
                               >
@@ -335,11 +334,16 @@ const Table: React.FC<TableProps> = ({
                                     </label>
                                   )
                                 )}
-                                <div>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    gap: "0.75rem",
+                                    flexWrap: "wrap",
+                                    width: "100%",
+                                  }}
+                                >
                                   <button
                                     style={{
-                                      width: "100%",
-                                      marginBottom: "10px",
                                       background: "#f44336",
                                       color: "#fff",
                                       padding: "8px",
@@ -359,8 +363,6 @@ const Table: React.FC<TableProps> = ({
                                   </button>
                                   <button
                                     style={{
-                                      width: "100%",
-                                      marginTop: "10px",
                                       background: "#4CAF50",
                                       color: "#fff",
                                       padding: "8px",

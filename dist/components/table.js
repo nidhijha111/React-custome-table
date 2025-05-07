@@ -145,12 +145,13 @@ const Table = ({ columns, data, sortable = false, theme = {}, }) => {
                                     gap: "0.75rem",
                                     flexWrap: "wrap",
                                     width: "100%",
+                                    position: "relative",
                                 } },
                                 col.showSearch && (React.createElement(Input, { type: "text", placeholder: `Filter ${col.title}`, value: filters[col.dataIndex] || "", onChange: (e) => {
                                         setFilters((f) => (Object.assign(Object.assign({}, f), { [col.dataIndex]: e.target.value })));
                                         setCurrentPage(1);
                                     } })),
-                                col.showFilter && (React.createElement("div", { style: { position: "relative" } },
+                                col.showFilter && (React.createElement("div", null,
                                     React.createElement(FontAwesomeIcon, { icon: faFilter, style: { cursor: "pointer" }, onClick: () => setActiveFilterColumn(activeFilterColumn === col.dataIndex
                                             ? null
                                             : col.dataIndex) }),
@@ -163,7 +164,6 @@ const Table = ({ columns, data, sortable = false, theme = {}, }) => {
                                             padding: "0.5rem",
                                             zIndex: 10,
                                             maxHeight: "200px",
-                                            width: "100%",
                                             overflowY: "auto",
                                         } },
                                         React.createElement("button", { style: {
@@ -193,10 +193,13 @@ const Table = ({ columns, data, sortable = false, theme = {}, }) => {
                                                     } }),
                                                 val));
                                         }),
-                                        React.createElement("div", null,
+                                        React.createElement("div", { style: {
+                                                display: "flex",
+                                                gap: "0.75rem",
+                                                flexWrap: "wrap",
+                                                width: "100%",
+                                            } },
                                             React.createElement("button", { style: {
-                                                    width: "100%",
-                                                    marginBottom: "10px",
                                                     background: "#f44336",
                                                     color: "#fff",
                                                     padding: "8px",
@@ -208,8 +211,6 @@ const Table = ({ columns, data, sortable = false, theme = {}, }) => {
                                                     setCurrentPage(1);
                                                 } }, "Clear Filter"),
                                             React.createElement("button", { style: {
-                                                    width: "100%",
-                                                    marginTop: "10px",
                                                     background: "#4CAF50",
                                                     color: "#fff",
                                                     padding: "8px",
