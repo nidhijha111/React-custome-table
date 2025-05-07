@@ -213,152 +213,171 @@ const Table: React.FC<TableProps> = ({
                         {col.title}
                         {col.sorter && (
                           <FontAwesomeIcon
-                            icon={
-                              sortConfig?.key === col.dataIndex
-                                ? sortConfig.direction === "asc"
-                                  ? faSortUp
-                                  : faSortDown
-                                : faSort
-                            }
+                            icon={faSort}
+                            style={{
+                              fontSize: "0.75rem",
+                              cursor: "pointer",
+                              transform:
+                                sortConfig?.key === col.dataIndex &&
+                                sortConfig.direction === "desc"
+                                  ? "rotate(180deg)"
+                                  : "none",
+                              color:
+                                sortConfig?.key === col.dataIndex
+                                  ? "#000"
+                                  : "#ccc",
+                              transition: "transform 0.2s ease",
+                            }}
                           />
                         )}
                       </div>
-                      {col.showSearch && (
-                        <Input
-                          type="text"
-                          placeholder={`Filter ${col.title}`}
-                          value={filters[col.dataIndex] || ""}
-                          onChange={(e) => {
-                            setFilters((f) => ({
-                              ...f,
-                              [col.dataIndex]: e.target.value,
-                            }));
-                            setCurrentPage(1);
-                          }}
-                        />
-                      )}
-                      {col.showFilter && (
-                        <div style={{ position: "relative" }}>
-                          <FontAwesomeIcon
-                            icon={faFilter}
-                            style={{ cursor: "pointer" }}
-                            onClick={() =>
-                              setActiveFilterColumn(
-                                activeFilterColumn === col.dataIndex
-                                  ? null
-                                  : col.dataIndex
-                              )
-                            }
+                      <div
+                        style={{
+                          display: "flex",
+                          gap: "0.75rem",
+                          flexWrap: "wrap",
+                          width: "100%",
+                        }}
+                      >
+                        {col.showSearch && (
+                          <Input
+                            type="text"
+                            placeholder={`Filter ${col.title}`}
+                            value={filters[col.dataIndex] || ""}
+                            onChange={(e) => {
+                              setFilters((f) => ({
+                                ...f,
+                                [col.dataIndex]: e.target.value,
+                              }));
+                              setCurrentPage(1);
+                            }}
                           />
-                          {activeFilterColumn === col.dataIndex && (
-                            <div
-                              ref={filterDropdownRef}
-                              style={{
-                                position: "absolute",
-                                top: "1.5rem",
-                                left: 0,
-                                background: "#fff",
-                                border: "1px solid #ccc",
-                                padding: "0.5rem",
-                                zIndex: 10,
-                                maxHeight: "200px",
-                                overflowY: "auto",
-                              }}
-                            >
-                              {/* Clear Filter Button */}
-                              <button
-                                // onClick={() => setActiveFilterColumn(null)}
+                        )}
+                        {col.showFilter && (
+                          <div style={{ position: "relative" }}>
+                            <FontAwesomeIcon
+                              icon={faFilter}
+                              style={{ cursor: "pointer" }}
+                              onClick={() =>
+                                setActiveFilterColumn(
+                                  activeFilterColumn === col.dataIndex
+                                    ? null
+                                    : col.dataIndex
+                                )
+                              }
+                            />
+                            {activeFilterColumn === col.dataIndex && (
+                              <div
+                                ref={filterDropdownRef}
                                 style={{
                                   position: "absolute",
-                                  top: "5px",
-                                  right: "5px",
-                                  background: "transparent",
-                                  border: "none",
-                                  color: "#000",
-                                  fontSize: "20px",
-                                  cursor: "pointer",
+                                  top: "1.5rem",
+                                  left: 0,
+                                  background: "#fff",
+                                  border: "1px solid #ccc",
+                                  padding: "0.5rem",
+                                  zIndex: 10,
+                                  maxHeight: "200px",
+                                  overflowY: "auto",
                                 }}
-                                onClick={() => setActiveFilterColumn(null)}
                               >
-                                <FontAwesomeIcon icon={faTimes} />
-                              </button>
-                              {/* Render Filter Options */}
-                              {getUniqueColumnValues(data, col.dataIndex).map(
-                                (val) => (
-                                  <label key={val} style={{ display: "block" }}>
-                                    <input
-                                      type="checkbox"
-                                      checked={
-                                        checkedFilterOptions[
-                                          col.dataIndex
-                                        ]?.includes(val) ?? false
-                                      }
-                                      onChange={(e) => {
-                                        const checked = e.target.checked;
-                                        setCheckedFilterOptions((prev) => {
-                                          const existing =
-                                            prev[col.dataIndex] || [];
-                                          const updated = checked
-                                            ? [...existing, val]
-                                            : existing.filter((v) => v !== val);
-                                          return {
-                                            ...prev,
-                                            [col.dataIndex]: updated,
-                                          };
-                                        });
-                                        setCurrentPage(1); // Reset to the first page whenever a selection is made
-                                      }}
-                                    />
-                                    {val}
-                                  </label>
-                                )
-                              )}
-                              <div>
                                 <button
                                   style={{
-                                    width: "100%",
-                                    marginBottom: "10px",
-                                    background: "#f44336",
-                                    color: "#fff",
-                                    padding: "8px",
+                                    position: "absolute",
+                                    top: "5px",
+                                    right: "5px",
+                                    background: "transparent",
                                     border: "none",
-                                    borderRadius: "4px",
+                                    color: "#000",
+                                    fontSize: "20px",
                                     cursor: "pointer",
                                   }}
-                                  onClick={() => {
-                                    // Clear selected filter for this column
-                                    setCheckedFilterOptions((prev) => ({
-                                      ...prev,
-                                      [col.dataIndex]: [], // Reset the filter for this column
-                                    }));
-                                    setCurrentPage(1); // Reset to the first page
-                                  }}
+                                  onClick={() => setActiveFilterColumn(null)}
                                 >
-                                  Clear Filter
+                                  <FontAwesomeIcon icon={faTimes} />
                                 </button>
-                                <button
-                                  style={{
-                                    width: "100%",
-                                    marginTop: "10px",
-                                    background: "#4CAF50",
-                                    color: "#fff",
-                                    padding: "8px",
-                                    border: "none",
-                                    borderRadius: "4px",
-                                    cursor: "pointer",
-                                  }}
-                                  onClick={() => {
-                                    setActiveFilterColumn(null);
-                                    setCurrentPage(1);
-                                  }}
-                                >
-                                  Apply Filter
-                                </button>
+
+                                {getUniqueColumnValues(data, col.dataIndex).map(
+                                  (val) => (
+                                    <label
+                                      key={val}
+                                      style={{ display: "block" }}
+                                    >
+                                      <input
+                                        type="checkbox"
+                                        checked={
+                                          checkedFilterOptions[
+                                            col.dataIndex
+                                          ]?.includes(val) ?? false
+                                        }
+                                        onChange={(e) => {
+                                          const checked = e.target.checked;
+                                          setCheckedFilterOptions((prev) => {
+                                            const existing =
+                                              prev[col.dataIndex] || [];
+                                            const updated = checked
+                                              ? [...existing, val]
+                                              : existing.filter(
+                                                  (v) => v !== val
+                                                );
+                                            return {
+                                              ...prev,
+                                              [col.dataIndex]: updated,
+                                            };
+                                          });
+                                          setCurrentPage(1);
+                                        }}
+                                      />
+                                      {val}
+                                    </label>
+                                  )
+                                )}
+                                <div>
+                                  <button
+                                    style={{
+                                      width: "100%",
+                                      marginBottom: "10px",
+                                      background: "#f44336",
+                                      color: "#fff",
+                                      padding: "8px",
+                                      border: "none",
+                                      borderRadius: "4px",
+                                      cursor: "pointer",
+                                    }}
+                                    onClick={() => {
+                                      setCheckedFilterOptions((prev) => ({
+                                        ...prev,
+                                        [col.dataIndex]: [],
+                                      }));
+                                      setCurrentPage(1);
+                                    }}
+                                  >
+                                    Clear Filter
+                                  </button>
+                                  <button
+                                    style={{
+                                      width: "100%",
+                                      marginTop: "10px",
+                                      background: "#4CAF50",
+                                      color: "#fff",
+                                      padding: "8px",
+                                      border: "none",
+                                      borderRadius: "4px",
+                                      cursor: "pointer",
+                                    }}
+                                    onClick={() => {
+                                      setActiveFilterColumn(null);
+                                      setCurrentPage(1);
+                                    }}
+                                  >
+                                    Apply Filter
+                                  </button>
+                                </div>
                               </div>
-                            </div>
-                          )}
-                        </div>
-                      )}
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </th>
                 ))}
