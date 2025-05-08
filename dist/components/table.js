@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDownload, faFilter, faTimes, } from "@fortawesome/free-solid-svg-icons";
-import { Button, DropdownButton, DropdownItem, DropdownMenu, DropdownWrapper, Input, StyledTable, TableWrapper, Toolbar, } from "./styledcomponets/style";
+import { Button, DropdownButton, DropdownItem, DropdownMenu, DropdownWrapper, FilterContentWrapper, Input, StyledTable, TableWrapper, Toolbar, } from "./styledcomponets/style";
 import Pagination from "./pagination";
 import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
 const Table = ({ columns, data, sortable = false, theme = {}, }) => {
@@ -155,17 +155,7 @@ const Table = ({ columns, data, sortable = false, theme = {}, }) => {
                                     React.createElement(FontAwesomeIcon, { icon: faFilter, style: { cursor: "pointer" }, onClick: () => setActiveFilterColumn(activeFilterColumn === col.dataIndex
                                             ? null
                                             : col.dataIndex) }),
-                                    activeFilterColumn === col.dataIndex && (React.createElement("div", { ref: filterDropdownRef, style: {
-                                            position: "absolute",
-                                            top: "1.5rem",
-                                            left: 0,
-                                            background: "#fff",
-                                            border: "1px solid #ccc",
-                                            padding: "0.5rem",
-                                            zIndex: 10,
-                                            maxHeight: "200px",
-                                            overflowY: "auto",
-                                        } },
+                                    activeFilterColumn === col.dataIndex && (React.createElement(FilterContentWrapper, { ref: filterDropdownRef },
                                         React.createElement("button", { style: {
                                                 position: "absolute",
                                                 top: "5px",

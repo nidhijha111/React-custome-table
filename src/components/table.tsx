@@ -14,6 +14,7 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownWrapper,
+  FilterContentWrapper,
   Input,
   StyledTable,
   TableWrapper,
@@ -269,19 +270,8 @@ const Table: React.FC<TableProps> = ({
                               }
                             />
                             {activeFilterColumn === col.dataIndex && (
-                              <div
+                              <FilterContentWrapper
                                 ref={filterDropdownRef}
-                                style={{
-                                  position: "absolute",
-                                  top: "1.5rem",
-                                  left: 0,
-                                  background: "#fff",
-                                  border: "1px solid #ccc",
-                                  padding: "0.5rem",
-                                  zIndex: 10,
-                                  maxHeight: "200px",
-                                  overflowY: "auto",
-                                }}
                               >
                                 <button
                                   style={{
@@ -378,7 +368,7 @@ const Table: React.FC<TableProps> = ({
                                     Apply Filter
                                   </button>
                                 </div>
-                              </div>
+                              </FilterContentWrapper>
                             )}
                           </div>
                         )}
