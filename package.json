@@ -1,6 +1,6 @@
 {
   "name": "react-custome-table",
-  "version": "1.0.22",
+  "version": "1.0.24",
   "description": "A customizable React table component",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -17,7 +17,7 @@
     "component",
     "typescript"
   ],
-  "author": "Your Name <you@example.com>",
+  "author": "Nidhi kuamri <ssc.nidhi@gmail.com>",
   "license": "MIT",
   "repository": {
     "type": "git",

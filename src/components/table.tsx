@@ -19,6 +19,8 @@ import {
   FilterCloseButton,
   FilterContentWrapper,
   Input,
+  InputCheckbox,
+  Label,
   StyledTable,
   TableWrapper,
   Toolbar,
@@ -162,7 +164,7 @@ const Table: React.FC<TableProps> = ({
       <Toolbar>
         <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
           <Input
-            type="text"
+            type="search"
             placeholder="Search..."
             value={searchText}
             onChange={(e) => {
@@ -204,7 +206,7 @@ const Table: React.FC<TableProps> = ({
               {columns
                 .filter((col) => visibleColumns.includes(col.dataIndex))
                 .map((col) => (
-                  <th key={col.dataIndex}>
+                  <th key={col.dataIndex} style={{ width: `${col?.width}px` }}>
                     <div style={{ display: "flex", flexDirection: "column" }}>
                       <div
                         style={{
@@ -282,11 +284,8 @@ const Table: React.FC<TableProps> = ({
 
                                 {getUniqueColumnValues(data, col.dataIndex).map(
                                   (val) => (
-                                    <label
-                                      key={val}
-                                      style={{ display: "block" }}
-                                    >
-                                      <input
+                                    <Label key={val}>
+                                      <InputCheckbox
                                         type="checkbox"
                                         checked={
                                           checkedFilterOptions[
@@ -312,7 +311,7 @@ const Table: React.FC<TableProps> = ({
                                         }}
                                       />
                                       {val}
-                                    </label>
+                                    </Label>
                                   )
                                 )}
                                 <FilterButtonWrapper>
@@ -328,12 +327,13 @@ const Table: React.FC<TableProps> = ({
                                     Clear
                                   </CancelButton>
                                   <Button
+                                    themeStyle={theme}
                                     onClick={() => {
                                       setActiveFilterColumn(null);
                                       setCurrentPage(1);
                                     }}
                                   >
-                                    Apply
+                                    Ok
                                   </Button>
                                 </FilterButtonWrapper>
                               </FilterContentWrapper>

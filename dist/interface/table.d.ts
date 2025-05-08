@@ -24,4 +24,5 @@ export interface Column {
         colSpan?: number;
     };
     showFilter?: boolean;
+    width?: number;
 }

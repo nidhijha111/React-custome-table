@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDownload, faFilter, faTimes, } from "@fortawesome/free-solid-svg-icons";
-import { Button, DropdownButton, DropdownItem, DropdownMenu, DropdownWrapper, FilterContentWrapper, Input, StyledTable, TableWrapper, Toolbar, } from "./styledcomponets/style";
+import { Button, CancelButton, DropdownButton, DropdownItem, DropdownMenu, DropdownWrapper, FilterButtonWrapper, FilterCloseButton, FilterContentWrapper, Input, InputCheckbox, Label, StyledTable, TableWrapper, Toolbar, } from "./styledcomponets/style";
 import Pagination from "./pagination";
 import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
 const Table = ({ columns, data, sortable = false, theme = {}, }) => {
@@ -101,7 +101,7 @@ const Table = ({ columns, data, sortable = false, theme = {}, }) => {
     return (React.createElement(TableWrapper, { themeStyle: theme },
         React.createElement(Toolbar, null,
             React.createElement("div", { style: { display: "flex", gap: "0.75rem", flexWrap: "wrap" } },
-                React.createElement(Input, { type: "text", placeholder: "Search...", value: searchText, onChange: (e) => {
+                React.createElement(Input, { type: "search", placeholder: "Search...", value: searchText, onChange: (e) => {
                         setSearchText(e.target.value);
                         setCurrentPage(1);
                     } })),
@@ -119,7 +119,7 @@ const Table = ({ columns, data, sortable = false, theme = {}, }) => {
                 React.createElement("thead", null,
                     React.createElement("tr", null, columns
                         .filter((col) => visibleColumns.includes(col.dataIndex))
-                        .map((col) => (React.createElement("th", { key: col.dataIndex },
+                        .map((col) => (React.createElement("th", { key: col.dataIndex, style: { width: `${col === null || col === void 0 ? void 0 : col.width}px` } },
                         React.createElement("div", { style: { display: "flex", flexDirection: "column" } },
                             React.createElement("div", { style: {
                                     display: "flex",
@@ -156,21 +156,12 @@ const Table = ({ columns, data, sortable = false, theme = {}, }) => {
                                             ? null
                                             : col.dataIndex) }),
                                     activeFilterColumn === col.dataIndex && (React.createElement(FilterContentWrapper, { ref: filterDropdownRef },
-                                        React.createElement("button", { style: {
-                                                position: "absolute",
-                                                top: "5px",
-                                                right: "5px",
-                                                background: "transparent",
-                                                border: "none",
-                                                color: "#000",
-                                                fontSize: "20px",
-                                                cursor: "pointer",
-                                            }, onClick: () => setActiveFilterColumn(null) },
+                                        React.createElement(FilterCloseButton, { onClick: () => setActiveFilterColumn(null) },
                                             React.createElement(FontAwesomeIcon, { icon: faTimes })),
                                         getUniqueColumnValues(data, col.dataIndex).map((val) => {
                                             var _a, _b;
-                                            return (React.createElement("label", { key: val, style: { display: "block" } },
-                                                React.createElement("input", { type: "checkbox", checked: (_b = (_a = checkedFilterOptions[col.dataIndex]) === null || _a === void 0 ? void 0 : _a.includes(val)) !== null && _b !== void 0 ? _b : false, onChange: (e) => {
+                                            return (React.createElement(Label, { key: val },
+                                                React.createElement(InputCheckbox, { type: "checkbox", checked: (_b = (_a = checkedFilterOptions[col.dataIndex]) === null || _a === void 0 ? void 0 : _a.includes(val)) !== null && _b !== void 0 ? _b : false, onChange: (e) => {
                                                         const checked = e.target.checked;
                                                         setCheckedFilterOptions((prev) => {
                                                             const existing = prev[col.dataIndex] || [];
@@ -183,34 +174,15 @@ const Table = ({ columns, data, sortable = false, theme = {}, }) => {
                                                     } }),
                                                 val));
                                         }),
-                                        React.createElement("div", { style: {
-                                                display: "flex",
-                                                gap: "0.75rem",
-                                                flexWrap: "wrap",
-                                                width: "100%",
-                                            } },
-                                            React.createElement("button", { style: {
-                                                    background: "#f44336",
-                                                    color: "#fff",
-                                                    padding: "8px",
-                                                    border: "none",
-                                                    borderRadius: "4px",
-                                                    cursor: "pointer",
-                                                }, onClick: () => {
+                                        React.createElement(FilterButtonWrapper, null,
+                                            React.createElement(CancelButton, { onClick: () => {
                                                     setCheckedFilterOptions((prev) => (Object.assign(Object.assign({}, prev), { [col.dataIndex]: [] })));
                                                     setCurrentPage(1);
-                                                } }, "Clear Filter"),
-                                            React.createElement("button", { style: {
-                                                    background: "#4CAF50",
-                                                    color: "#fff",
-                                                    padding: "8px",
-                                                    border: "none",
-                                                    borderRadius: "4px",
-                                                    cursor: "pointer",
-                                                }, onClick: () => {
+                                                } }, "Clear"),
+                                            React.createElement(Button, { themeStyle: theme, onClick: () => {
                                                     setActiveFilterColumn(null);
                                                     setCurrentPage(1);
-                                                } }, "Apply Filter"))))))))))))),
+                                                } }, "Ok"))))))))))))),
                 React.createElement("tbody", null, paginatedData.map((row, rowIndex) => (React.createElement("tr", { key: rowIndex }, columns
                     .filter((col) => visibleColumns.includes(col.dataIndex))
                     .map((col) => (React.createElement("td", { key: col.dataIndex }, row[col.dataIndex]))))))))),

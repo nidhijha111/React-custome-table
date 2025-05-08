@@ -182,3 +182,15 @@ export const FilterCloseButton = styled.button<{ themeStyle?: TableTheme }>`
       font-size:20px;
       cursor: pointer;
 `;
+
+export const Label = styled.label`
+ font-weight:lighter;
+ display: flex;
+ align-items: center;
+ gap: 0.75rem;
+`;
+
+
+export const InputCheckbox = styled.input`
+
+`;

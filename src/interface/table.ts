@@ -24,4 +24,5 @@ export interface Column {
   customRenderer?: (value: any, row: any) => ReactNode;
   onCell?: (record: any) => { rowSpan?: number; colSpan?: number }; 
   showFilter?:boolean;
+  width?:number
 }
