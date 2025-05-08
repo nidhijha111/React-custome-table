@@ -10,10 +10,13 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import {
   Button,
+  CancelButton,
   DropdownButton,
   DropdownItem,
   DropdownMenu,
   DropdownWrapper,
+  FilterButtonWrapper,
+  FilterCloseButton,
   FilterContentWrapper,
   Input,
   StyledTable,
@@ -270,24 +273,12 @@ const Table: React.FC<TableProps> = ({
                               }
                             />
                             {activeFilterColumn === col.dataIndex && (
-                              <FilterContentWrapper
-                                ref={filterDropdownRef}
-                              >
-                                <button
-                                  style={{
-                                    position: "absolute",
-                                    top: "5px",
-                                    right: "5px",
-                                    background: "transparent",
-                                    border: "none",
-                                    color: "#000",
-                                    fontSize: "20px",
-                                    cursor: "pointer",
-                                  }}
+                              <FilterContentWrapper ref={filterDropdownRef}>
+                                <FilterCloseButton
                                   onClick={() => setActiveFilterColumn(null)}
                                 >
                                   <FontAwesomeIcon icon={faTimes} />
-                                </button>
+                                </FilterCloseButton>
 
                                 {getUniqueColumnValues(data, col.dataIndex).map(
                                   (val) => (
@@ -324,23 +315,8 @@ const Table: React.FC<TableProps> = ({
                                     </label>
                                   )
                                 )}
-                                <div
-                                  style={{
-                                    display: "flex",
-                                    gap: "0.75rem",
-                                    flexWrap: "wrap",
-                                    width: "100%",
-                                  }}
-                                >
-                                  <button
-                                    style={{
-                                      background: "#f44336",
-                                      color: "#fff",
-                                      padding: "8px",
-                                      border: "none",
-                                      borderRadius: "4px",
-                                      cursor: "pointer",
-                                    }}
+                                <FilterButtonWrapper>
+                                  <CancelButton
                                     onClick={() => {
                                       setCheckedFilterOptions((prev) => ({
                                         ...prev,
@@ -349,25 +325,17 @@ const Table: React.FC<TableProps> = ({
                                       setCurrentPage(1);
                                     }}
                                   >
-                                    Clear Filter
-                                  </button>
-                                  <button
-                                    style={{
-                                      background: "#4CAF50",
-                                      color: "#fff",
-                                      padding: "8px",
-                                      border: "none",
-                                      borderRadius: "4px",
-                                      cursor: "pointer",
-                                    }}
+                                    Clear
+                                  </CancelButton>
+                                  <Button
                                     onClick={() => {
                                       setActiveFilterColumn(null);
                                       setCurrentPage(1);
                                     }}
                                   >
-                                    Apply Filter
-                                  </button>
-                                </div>
+                                    Apply
+                                  </Button>
+                                </FilterButtonWrapper>
                               </FilterContentWrapper>
                             )}
                           </div>
