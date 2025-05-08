@@ -1,6 +1,6 @@
 {
   "name": "react-custome-table",
-  "version": "1.0.13",
+  "version": "1.0.22",
   "description": "A customizable React table component",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -21,7 +21,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nidhijha111/React-custome-table"
+    "url": "git+https://github.com/nidhijha111/React-custome-table.git"
   },
   "bugs": {
     "url": "https://github.com/nidhijha111/React-custome-table"

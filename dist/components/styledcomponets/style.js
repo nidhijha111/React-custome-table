@@ -9,7 +9,7 @@ const defaultTheme = {
 export const TableWrapper = styled.div `
   padding: 1rem;
   background-color: #fff;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); */
   color: ${({ themeStyle }) => (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.textColor) || defaultTheme.textColor};
   width: 100%;
 `;
@@ -94,11 +94,15 @@ export const StyledTable = styled.table `
   width: 100%;
   border-collapse: collapse;
   min-width: 600px;
-  border: 1px solid ${({ themeStyle }) => (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.borderColor) || defaultTheme.borderColor};
+  border-radius: 10px;
+  border: 1px solid
+    ${({ themeStyle }) => (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.borderColor) || defaultTheme.borderColor};
 
-  th, td {
+  th,
+  td {
     padding: 0.75rem;
-    border: 1px solid ${({ themeStyle }) => (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.borderColor) || defaultTheme.borderColor};
+    border: 1px solid
+      ${({ themeStyle }) => (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.borderColor) || defaultTheme.borderColor};
     text-align: left;
   }
 
@@ -123,4 +127,15 @@ export const PaginationControls = styled.div `
   display: flex;
   align-items: center;
   gap: 0.5rem;
+`;
+export const FilterContentWrapper = styled.div `
+  position: absolute;
+  top: 1.5rem;
+  left: 0;
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+  z-index: 10;
+  max-height: 200px;
+  overflow-y: auto;
 `;

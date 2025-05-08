@@ -12,7 +12,6 @@ const defaultTheme: TableTheme = {
 export const TableWrapper = styled.div<{ themeStyle?: TableTheme }>`
   padding: 1rem;
   background-color: #fff;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   color: ${({ themeStyle }) => themeStyle?.textColor || defaultTheme.textColor};
   width: 100%;
 `;
@@ -31,7 +30,7 @@ export const Toolbar = styled.div`
 `;
 
 export const Input = styled.input`
-  padding: 0.4rem 0.8rem;
+  padding: 0.6rem 0.8rem;
   border: 1px solid #ccc;
   border-radius: 4px;
 `;
@@ -43,7 +42,8 @@ export const Select = styled.select`
 `;
 
 export const Button = styled.button<{ themeStyle?: TableTheme }>`
-  background-color: ${({ themeStyle }) => themeStyle?.buttonBg || defaultTheme.buttonBg};
+  background-color: ${({ themeStyle }) =>
+    themeStyle?.buttonBg || defaultTheme.buttonBg};
   color: white;
   padding: 0.4rem 0.8rem;
   border-radius: 4px;
@@ -106,22 +106,28 @@ export const StyledTable = styled.table<{ themeStyle?: TableTheme }>`
   width: 100%;
   border-collapse: collapse;
   min-width: 600px;
-  border: 1px solid ${({ themeStyle }) => themeStyle?.borderColor || defaultTheme.borderColor};
+  border-radius: 10px;
+  border: 1px solid
+    ${({ themeStyle }) => themeStyle?.borderColor || defaultTheme.borderColor};
 
-  th, td {
+  th,
+  td {
     padding: 0.75rem;
-    border: 1px solid ${({ themeStyle }) => themeStyle?.borderColor || defaultTheme.borderColor};
+    border: 1px solid
+      ${({ themeStyle }) => themeStyle?.borderColor || defaultTheme.borderColor};
     text-align: left;
   }
 
   th {
-    background-color: ${({ themeStyle }) => themeStyle?.headerBg || defaultTheme.headerBg};
+    background-color: ${({ themeStyle }) =>
+      themeStyle?.headerBg || defaultTheme.headerBg};
     cursor: pointer;
     user-select: none;
   }
 
   tr:hover {
-    background-color: ${({ themeStyle }) => themeStyle?.rowHoverColor || defaultTheme.rowHoverColor};
+    background-color: ${({ themeStyle }) =>
+      themeStyle?.rowHoverColor || defaultTheme.rowHoverColor};
   }
 `;
 
@@ -137,4 +143,42 @@ export const PaginationControls = styled.div`
   display: flex;
   align-items: center;
   gap: 0.5rem;
+`;
+
+export const FilterContentWrapper = styled.div`
+  position: absolute;
+  top: 1.5rem;
+  left: 0;
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+  z-index: 10;
+  max-height: 200px;
+  overflow-y: auto;
+`;
+
+export const CancelButton = styled.button`
+  border: 1px solid #f44336;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  color: #f44336;
+  cursor: pointer;
+`;
+
+export const FilterButtonWrapper = styled.div`
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+`;
+
+export const FilterCloseButton = styled.button<{ themeStyle?: TableTheme }>`
+      position: absolute;
+      top: 5px;
+      right:5px;
+      background:transparent;
+      border:none;
+      color: ${({ themeStyle }) => themeStyle?.textColor || defaultTheme.textColor};
+      font-size:20px;
+      cursor: pointer;
 `;
