@@ -2,8 +2,14 @@ import { ReactNode } from "react";
 export type TableProps = {
     columns: Column[];
     data: Record<string, any>[];
-    sortable?: boolean;
     theme?: TableTheme;
+    pagination?: boolean;
+    exportCsv?: boolean;
+    tableSearch?: boolean;
+    tableTitle?: string;
+    tableSubTitle?: string;
+    columnViewOtion?: boolean;
+    columnMove?: boolean;
 };
 export type TableTheme = {
     primaryColor?: string;
@@ -25,4 +31,5 @@ export interface Column {
     };
     showFilter?: boolean;
     width?: number;
+    hideColumn?: boolean;
 }

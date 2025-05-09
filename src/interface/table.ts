@@ -3,8 +3,14 @@ import { ReactNode } from "react";
 export type TableProps = {
   columns: Column[];
   data: Record<string, any>[];
-  sortable?: boolean;
   theme?: TableTheme;
+  pagination?:boolean;
+  exportCsv?:boolean;
+  tableSearch?:boolean;
+  tableTitle?:string;
+  tableSubTitle?:string;
+  columnViewOtion?:boolean;
+  columnMove?:boolean;
 };
 
 export type TableTheme = {
@@ -24,5 +30,6 @@ export interface Column {
   customRenderer?: (value: any, row: any) => ReactNode;
   onCell?: (record: any) => { rowSpan?: number; colSpan?: number }; 
   showFilter?:boolean;
-  width?:number
+  width?:number;
+  hideColumn?:boolean;
 }

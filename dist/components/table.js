@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDownload, faFilter, faTimes, } from "@fortawesome/free-solid-svg-icons";
-import { Button, CancelButton, DropdownButton, DropdownItem, DropdownMenu, DropdownWrapper, FilterButtonWrapper, FilterCloseButton, FilterContentWrapper, Input, InputCheckbox, Label, StyledTable, TableWrapper, Toolbar, } from "./styledcomponets/style";
+import { faDownload } from "@fortawesome/free-solid-svg-icons";
+import { Button, DropdownButton, DropdownItem, DropdownMenu, DropdownWrapper, Input, StyledTable, TableWrapper, Toolbar, } from "./styledcomponets/style";
 import Pagination from "./pagination";
-import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
-const Table = ({ columns, data, sortable = false, theme = {}, }) => {
+import TheadData from "./theadData";
+const Table = ({ columns, data, theme = {}, pagination, tableTitle }) => {
     const [sortConfig, setSortConfig] = useState(null);
     const [searchText, setSearchText] = useState("");
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -51,7 +51,7 @@ const Table = ({ columns, data, sortable = false, theme = {}, }) => {
         });
     }, [data, searchText, filters, visibleColumns]);
     const sortedData = useMemo(() => {
-        if (!sortable || !sortConfig)
+        if (!sortConfig)
             return searchData;
         return [...searchData].sort((a, b) => {
             const aVal = a[sortConfig.key];
@@ -63,7 +63,7 @@ const Table = ({ columns, data, sortable = false, theme = {}, }) => {
                 ? String(aVal).localeCompare(String(bVal))
                 : String(bVal).localeCompare(String(aVal));
         });
-    }, [searchData, sortConfig, sortable]);
+    }, [searchData, sortConfig]);
     const finalFilteredData = useMemo(() => {
         return sortedData.filter((row) => Object.entries(checkedFilterOptions).every(([key, selectedVals]) => {
             if (!selectedVals || selectedVals.length === 0)
@@ -77,8 +77,6 @@ const Table = ({ columns, data, sortable = false, theme = {}, }) => {
     }, [finalFilteredData, currentPage, rowsPerPage]);
     const totalPages = Math.max(1, Math.ceil(finalFilteredData.length / rowsPerPage));
     const handleSort = (columnKey) => {
-        if (!sortable)
-            return;
         setSortConfig((prev) => (prev === null || prev === void 0 ? void 0 : prev.key) === columnKey
             ? {
                 key: columnKey,
@@ -99,6 +97,7 @@ const Table = ({ columns, data, sortable = false, theme = {}, }) => {
         URL.revokeObjectURL(url);
     };
     return (React.createElement(TableWrapper, { themeStyle: theme },
+        tableTitle && React.createElement("div", null, tableTitle),
         React.createElement(Toolbar, null,
             React.createElement("div", { style: { display: "flex", gap: "0.75rem", flexWrap: "wrap" } },
                 React.createElement(Input, { type: "search", placeholder: "Search...", value: searchText, onChange: (e) => {
@@ -119,73 +118,10 @@ const Table = ({ columns, data, sortable = false, theme = {}, }) => {
                 React.createElement("thead", null,
                     React.createElement("tr", null, columns
                         .filter((col) => visibleColumns.includes(col.dataIndex))
-                        .map((col) => (React.createElement("th", { key: col.dataIndex, style: { width: `${col === null || col === void 0 ? void 0 : col.width}px` } },
-                        React.createElement("div", { style: { display: "flex", flexDirection: "column" } },
-                            React.createElement("div", { style: {
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: "0.5rem",
-                                    cursor: col.sorter ? "pointer" : "default",
-                                }, onClick: () => col.sorter && handleSort(col.dataIndex) },
-                                col.title,
-                                col.sorter && (React.createElement(FontAwesomeIcon, { icon: faArrowUp, style: {
-                                        fontSize: "0.75rem",
-                                        cursor: "pointer",
-                                        transform: (sortConfig === null || sortConfig === void 0 ? void 0 : sortConfig.key) === col.dataIndex &&
-                                            sortConfig.direction === "desc"
-                                            ? "rotate(180deg)"
-                                            : "none",
-                                        color: (sortConfig === null || sortConfig === void 0 ? void 0 : sortConfig.key) === col.dataIndex
-                                            ? "#000"
-                                            : "#ccc",
-                                        transition: "transform 0.2s ease",
-                                    } }))),
-                            React.createElement("div", { style: {
-                                    display: "flex",
-                                    gap: "0.75rem",
-                                    flexWrap: "wrap",
-                                    width: "100%",
-                                    position: "relative",
-                                } },
-                                col.showSearch && (React.createElement(Input, { type: "text", placeholder: `Filter ${col.title}`, value: filters[col.dataIndex] || "", onChange: (e) => {
-                                        setFilters((f) => (Object.assign(Object.assign({}, f), { [col.dataIndex]: e.target.value })));
-                                        setCurrentPage(1);
-                                    } })),
-                                col.showFilter && (React.createElement("div", null,
-                                    React.createElement(FontAwesomeIcon, { icon: faFilter, style: { cursor: "pointer" }, onClick: () => setActiveFilterColumn(activeFilterColumn === col.dataIndex
-                                            ? null
-                                            : col.dataIndex) }),
-                                    activeFilterColumn === col.dataIndex && (React.createElement(FilterContentWrapper, { ref: filterDropdownRef },
-                                        React.createElement(FilterCloseButton, { onClick: () => setActiveFilterColumn(null) },
-                                            React.createElement(FontAwesomeIcon, { icon: faTimes })),
-                                        getUniqueColumnValues(data, col.dataIndex).map((val) => {
-                                            var _a, _b;
-                                            return (React.createElement(Label, { key: val },
-                                                React.createElement(InputCheckbox, { type: "checkbox", checked: (_b = (_a = checkedFilterOptions[col.dataIndex]) === null || _a === void 0 ? void 0 : _a.includes(val)) !== null && _b !== void 0 ? _b : false, onChange: (e) => {
-                                                        const checked = e.target.checked;
-                                                        setCheckedFilterOptions((prev) => {
-                                                            const existing = prev[col.dataIndex] || [];
-                                                            const updated = checked
-                                                                ? [...existing, val]
-                                                                : existing.filter((v) => v !== val);
-                                                            return Object.assign(Object.assign({}, prev), { [col.dataIndex]: updated });
-                                                        });
-                                                        setCurrentPage(1);
-                                                    } }),
-                                                val));
-                                        }),
-                                        React.createElement(FilterButtonWrapper, null,
-                                            React.createElement(CancelButton, { onClick: () => {
-                                                    setCheckedFilterOptions((prev) => (Object.assign(Object.assign({}, prev), { [col.dataIndex]: [] })));
-                                                    setCurrentPage(1);
-                                                } }, "Clear"),
-                                            React.createElement(Button, { themeStyle: theme, onClick: () => {
-                                                    setActiveFilterColumn(null);
-                                                    setCurrentPage(1);
-                                                } }, "Ok"))))))))))))),
+                        .map((col) => (React.createElement(TheadData, { key: col.dataIndex, col: col, handleSort: handleSort, filters: filters, setFilters: setFilters, setCurrentPage: setCurrentPage, activeFilterColumn: activeFilterColumn, setActiveFilterColumn: setActiveFilterColumn, sortConfig: sortConfig, filterDropdownRef: filterDropdownRef, getUniqueColumnValues: getUniqueColumnValues, checkedFilterOptions: checkedFilterOptions, setCheckedFilterOptions: setCheckedFilterOptions, theme: theme, data: data }))))),
                 React.createElement("tbody", null, paginatedData.map((row, rowIndex) => (React.createElement("tr", { key: rowIndex }, columns
                     .filter((col) => visibleColumns.includes(col.dataIndex))
                     .map((col) => (React.createElement("td", { key: col.dataIndex }, row[col.dataIndex]))))))))),
-        React.createElement(Pagination, { currentPage: currentPage, totalPages: totalPages, setCurrentPage: setCurrentPage, setRowsPerPage: setRowsPerPage, rowsPerPage: rowsPerPage, data: data, theme: theme })));
+        pagination && React.createElement(Pagination, { currentPage: currentPage, totalPages: totalPages, setCurrentPage: setCurrentPage, setRowsPerPage: setRowsPerPage, rowsPerPage: rowsPerPage, data: data, theme: theme })));
 };
 export default Table;

@@ -1,39 +1,27 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faSortUp,
-  faSortDown,
-  faSort,
-  faDownload,
-  faFilter,
-  faTimes,
-} from "@fortawesome/free-solid-svg-icons";
+import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import {
   Button,
-  CancelButton,
   DropdownButton,
   DropdownItem,
   DropdownMenu,
   DropdownWrapper,
-  FilterButtonWrapper,
-  FilterCloseButton,
-  FilterContentWrapper,
   Input,
-  InputCheckbox,
-  Label,
   StyledTable,
   TableWrapper,
   Toolbar,
 } from "./styledcomponets/style";
 import type { TableProps } from "../interface/table";
 import Pagination from "./pagination";
-import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
+import TheadData from "./theadData";
 
 const Table: React.FC<TableProps> = ({
   columns,
   data,
-  sortable = false,
   theme = {},
+  pagination,
+  tableTitle
 }) => {
   const [sortConfig, setSortConfig] = useState<null | {
     key: string;
@@ -100,7 +88,7 @@ const Table: React.FC<TableProps> = ({
   }, [data, searchText, filters, visibleColumns]);
 
   const sortedData = useMemo(() => {
-    if (!sortable || !sortConfig) return searchData;
+    if (!sortConfig) return searchData;
     return [...searchData].sort((a, b) => {
       const aVal = a[sortConfig.key];
       const bVal = b[sortConfig.key];
@@ -111,7 +99,7 @@ const Table: React.FC<TableProps> = ({
         ? String(aVal).localeCompare(String(bVal))
         : String(bVal).localeCompare(String(aVal));
     });
-  }, [searchData, sortConfig, sortable]);
+  }, [searchData, sortConfig]);
 
   const finalFilteredData = useMemo(() => {
     return sortedData.filter((row) =>
@@ -133,7 +121,6 @@ const Table: React.FC<TableProps> = ({
   );
 
   const handleSort = (columnKey: string) => {
-    if (!sortable) return;
     setSortConfig((prev) =>
       prev?.key === columnKey
         ? {
@@ -161,6 +148,9 @@ const Table: React.FC<TableProps> = ({
 
   return (
     <TableWrapper themeStyle={theme}>
+      {tableTitle && <div>
+        {tableTitle}
+      </div>}
       <Toolbar>
         <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
           <Input
@@ -206,143 +196,23 @@ const Table: React.FC<TableProps> = ({
               {columns
                 .filter((col) => visibleColumns.includes(col.dataIndex))
                 .map((col) => (
-                  <th key={col.dataIndex} style={{ width: `${col?.width}px` }}>
-                    <div style={{ display: "flex", flexDirection: "column" }}>
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "0.5rem",
-                          cursor: col.sorter ? "pointer" : "default",
-                        }}
-                        onClick={() => col.sorter && handleSort(col.dataIndex)}
-                      >
-                        {col.title}
-                        {col.sorter && (
-                          <FontAwesomeIcon
-                            icon={faArrowUp}
-                            style={{
-                              fontSize: "0.75rem",
-                              cursor: "pointer",
-                              transform:
-                                sortConfig?.key === col.dataIndex &&
-                                sortConfig.direction === "desc"
-                                  ? "rotate(180deg)"
-                                  : "none",
-                              color:
-                                sortConfig?.key === col.dataIndex
-                                  ? "#000"
-                                  : "#ccc",
-                              transition: "transform 0.2s ease",
-                            }}
-                          />
-                        )}
-                      </div>
-                      <div
-                        style={{
-                          display: "flex",
-                          gap: "0.75rem",
-                          flexWrap: "wrap",
-                          width: "100%",
-                          position: "relative",
-                        }}
-                      >
-                        {col.showSearch && (
-                          <Input
-                            type="text"
-                            placeholder={`Filter ${col.title}`}
-                            value={filters[col.dataIndex] || ""}
-                            onChange={(e) => {
-                              setFilters((f) => ({
-                                ...f,
-                                [col.dataIndex]: e.target.value,
-                              }));
-                              setCurrentPage(1);
-                            }}
-                          />
-                        )}
-                        {col.showFilter && (
-                          <div>
-                            <FontAwesomeIcon
-                              icon={faFilter}
-                              style={{ cursor: "pointer" }}
-                              onClick={() =>
-                                setActiveFilterColumn(
-                                  activeFilterColumn === col.dataIndex
-                                    ? null
-                                    : col.dataIndex
-                                )
-                              }
-                            />
-                            {activeFilterColumn === col.dataIndex && (
-                              <FilterContentWrapper ref={filterDropdownRef}>
-                                <FilterCloseButton
-                                  onClick={() => setActiveFilterColumn(null)}
-                                >
-                                  <FontAwesomeIcon icon={faTimes} />
-                                </FilterCloseButton>
-
-                                {getUniqueColumnValues(data, col.dataIndex).map(
-                                  (val) => (
-                                    <Label key={val}>
-                                      <InputCheckbox
-                                        type="checkbox"
-                                        checked={
-                                          checkedFilterOptions[
-                                            col.dataIndex
-                                          ]?.includes(val) ?? false
-                                        }
-                                        onChange={(e) => {
-                                          const checked = e.target.checked;
-                                          setCheckedFilterOptions((prev) => {
-                                            const existing =
-                                              prev[col.dataIndex] || [];
-                                            const updated = checked
-                                              ? [...existing, val]
-                                              : existing.filter(
-                                                  (v) => v !== val
-                                                );
-                                            return {
-                                              ...prev,
-                                              [col.dataIndex]: updated,
-                                            };
-                                          });
-                                          setCurrentPage(1);
-                                        }}
-                                      />
-                                      {val}
-                                    </Label>
-                                  )
-                                )}
-                                <FilterButtonWrapper>
-                                  <CancelButton
-                                    onClick={() => {
-                                      setCheckedFilterOptions((prev) => ({
-                                        ...prev,
-                                        [col.dataIndex]: [],
-                                      }));
-                                      setCurrentPage(1);
-                                    }}
-                                  >
-                                    Clear
-                                  </CancelButton>
-                                  <Button
-                                    themeStyle={theme}
-                                    onClick={() => {
-                                      setActiveFilterColumn(null);
-                                      setCurrentPage(1);
-                                    }}
-                                  >
-                                    Ok
-                                  </Button>
-                                </FilterButtonWrapper>
-                              </FilterContentWrapper>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </th>
+                  <TheadData
+                    key={col.dataIndex}
+                    col={col}
+                    handleSort={handleSort}
+                    filters={filters}
+                    setFilters={setFilters}
+                    setCurrentPage={setCurrentPage}
+                    activeFilterColumn={activeFilterColumn}
+                    setActiveFilterColumn={setActiveFilterColumn}
+                    sortConfig={sortConfig}
+                    filterDropdownRef={filterDropdownRef}
+                    getUniqueColumnValues={getUniqueColumnValues}
+                    checkedFilterOptions={checkedFilterOptions}
+                    setCheckedFilterOptions={setCheckedFilterOptions}
+                    theme={theme}
+                    data={data}
+                  />
                 ))}
             </tr>
           </thead>
@@ -360,7 +230,7 @@ const Table: React.FC<TableProps> = ({
         </StyledTable>
       </div>
 
-      <Pagination
+      {pagination && <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
         setCurrentPage={setCurrentPage}
@@ -368,7 +238,7 @@ const Table: React.FC<TableProps> = ({
         rowsPerPage={rowsPerPage}
         data={data}
         theme={theme}
-      />
+      />}
     </TableWrapper>
   );
 };
