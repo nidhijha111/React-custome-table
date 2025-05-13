@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDownload, faFilter, faTimes, } from "@fortawesome/free-solid-svg-icons";
-import { Button, DropdownButton, DropdownItem, DropdownMenu, DropdownWrapper, FilterContentWrapper, Input, StyledTable, TableWrapper, Toolbar, } from "./styledcomponets/style";
+import { faDownload } from "@fortawesome/free-solid-svg-icons";
+import { Button, DropdownButton, DropdownItem, DropdownMenu, DropdownWrapper, Input, TableWrapper, Toolbar, CustomeTable, Tr, Td } from "./styledcomponets/style";
 import Pagination from "./pagination";
-import { faArrowUp } from "@fortawesome/free-solid-svg-icons";
-const Table = ({ columns, data, sortable = false, theme = {}, }) => {
+import TheadData from "./theadData";
+const Table = ({ columns, data, theme = {}, pagination, tableTitle }) => {
     const [sortConfig, setSortConfig] = useState(null);
     const [searchText, setSearchText] = useState("");
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -51,7 +51,7 @@ const Table = ({ columns, data, sortable = false, theme = {}, }) => {
         });
     }, [data, searchText, filters, visibleColumns]);
     const sortedData = useMemo(() => {
-        if (!sortable || !sortConfig)
+        if (!sortConfig)
             return searchData;
         return [...searchData].sort((a, b) => {
             const aVal = a[sortConfig.key];
@@ -63,7 +63,7 @@ const Table = ({ columns, data, sortable = false, theme = {}, }) => {
                 ? String(aVal).localeCompare(String(bVal))
                 : String(bVal).localeCompare(String(aVal));
         });
-    }, [searchData, sortConfig, sortable]);
+    }, [searchData, sortConfig]);
     const finalFilteredData = useMemo(() => {
         return sortedData.filter((row) => Object.entries(checkedFilterOptions).every(([key, selectedVals]) => {
             if (!selectedVals || selectedVals.length === 0)
@@ -77,8 +77,6 @@ const Table = ({ columns, data, sortable = false, theme = {}, }) => {
     }, [finalFilteredData, currentPage, rowsPerPage]);
     const totalPages = Math.max(1, Math.ceil(finalFilteredData.length / rowsPerPage));
     const handleSort = (columnKey) => {
-        if (!sortable)
-            return;
         setSortConfig((prev) => (prev === null || prev === void 0 ? void 0 : prev.key) === columnKey
             ? {
                 key: columnKey,
@@ -99,9 +97,10 @@ const Table = ({ columns, data, sortable = false, theme = {}, }) => {
         URL.revokeObjectURL(url);
     };
     return (React.createElement(TableWrapper, { themeStyle: theme },
+        tableTitle && React.createElement("div", null, tableTitle),
         React.createElement(Toolbar, null,
             React.createElement("div", { style: { display: "flex", gap: "0.75rem", flexWrap: "wrap" } },
-                React.createElement(Input, { type: "text", placeholder: "Search...", value: searchText, onChange: (e) => {
+                React.createElement(Input, { type: "search", placeholder: "Search...", value: searchText, onChange: (e) => {
                         setSearchText(e.target.value);
                         setCurrentPage(1);
                     } })),
@@ -115,105 +114,14 @@ const Table = ({ columns, data, sortable = false, theme = {}, }) => {
                         React.createElement("input", { type: "checkbox", checked: visibleColumns.includes(col.dataIndex), onChange: () => toggleColumn(col.dataIndex) }),
                         col.title)))))))),
         React.createElement("div", { style: { overflowX: "auto" } },
-            React.createElement(StyledTable, { themeStyle: theme },
+            React.createElement(CustomeTable, { themeStyle: theme },
                 React.createElement("thead", null,
-                    React.createElement("tr", null, columns
+                    React.createElement(Tr, null, columns
                         .filter((col) => visibleColumns.includes(col.dataIndex))
-                        .map((col) => (React.createElement("th", { key: col.dataIndex },
-                        React.createElement("div", { style: { display: "flex", flexDirection: "column" } },
-                            React.createElement("div", { style: {
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: "0.5rem",
-                                    cursor: col.sorter ? "pointer" : "default",
-                                }, onClick: () => col.sorter && handleSort(col.dataIndex) },
-                                col.title,
-                                col.sorter && (React.createElement(FontAwesomeIcon, { icon: faArrowUp, style: {
-                                        fontSize: "0.75rem",
-                                        cursor: "pointer",
-                                        transform: (sortConfig === null || sortConfig === void 0 ? void 0 : sortConfig.key) === col.dataIndex &&
-                                            sortConfig.direction === "desc"
-                                            ? "rotate(180deg)"
-                                            : "none",
-                                        color: (sortConfig === null || sortConfig === void 0 ? void 0 : sortConfig.key) === col.dataIndex
-                                            ? "#000"
-                                            : "#ccc",
-                                        transition: "transform 0.2s ease",
-                                    } }))),
-                            React.createElement("div", { style: {
-                                    display: "flex",
-                                    gap: "0.75rem",
-                                    flexWrap: "wrap",
-                                    width: "100%",
-                                    position: "relative",
-                                } },
-                                col.showSearch && (React.createElement(Input, { type: "text", placeholder: `Filter ${col.title}`, value: filters[col.dataIndex] || "", onChange: (e) => {
-                                        setFilters((f) => (Object.assign(Object.assign({}, f), { [col.dataIndex]: e.target.value })));
-                                        setCurrentPage(1);
-                                    } })),
-                                col.showFilter && (React.createElement("div", null,
-                                    React.createElement(FontAwesomeIcon, { icon: faFilter, style: { cursor: "pointer" }, onClick: () => setActiveFilterColumn(activeFilterColumn === col.dataIndex
-                                            ? null
-                                            : col.dataIndex) }),
-                                    activeFilterColumn === col.dataIndex && (React.createElement(FilterContentWrapper, { ref: filterDropdownRef },
-                                        React.createElement("button", { style: {
-                                                position: "absolute",
-                                                top: "5px",
-                                                right: "5px",
-                                                background: "transparent",
-                                                border: "none",
-                                                color: "#000",
-                                                fontSize: "20px",
-                                                cursor: "pointer",
-                                            }, onClick: () => setActiveFilterColumn(null) },
-                                            React.createElement(FontAwesomeIcon, { icon: faTimes })),
-                                        getUniqueColumnValues(data, col.dataIndex).map((val) => {
-                                            var _a, _b;
-                                            return (React.createElement("label", { key: val, style: { display: "block" } },
-                                                React.createElement("input", { type: "checkbox", checked: (_b = (_a = checkedFilterOptions[col.dataIndex]) === null || _a === void 0 ? void 0 : _a.includes(val)) !== null && _b !== void 0 ? _b : false, onChange: (e) => {
-                                                        const checked = e.target.checked;
-                                                        setCheckedFilterOptions((prev) => {
-                                                            const existing = prev[col.dataIndex] || [];
-                                                            const updated = checked
-                                                                ? [...existing, val]
-                                                                : existing.filter((v) => v !== val);
-                                                            return Object.assign(Object.assign({}, prev), { [col.dataIndex]: updated });
-                                                        });
-                                                        setCurrentPage(1);
-                                                    } }),
-                                                val));
-                                        }),
-                                        React.createElement("div", { style: {
-                                                display: "flex",
-                                                gap: "0.75rem",
-                                                flexWrap: "wrap",
-                                                width: "100%",
-                                            } },
-                                            React.createElement("button", { style: {
-                                                    background: "#f44336",
-                                                    color: "#fff",
-                                                    padding: "8px",
-                                                    border: "none",
-                                                    borderRadius: "4px",
-                                                    cursor: "pointer",
-                                                }, onClick: () => {
-                                                    setCheckedFilterOptions((prev) => (Object.assign(Object.assign({}, prev), { [col.dataIndex]: [] })));
-                                                    setCurrentPage(1);
-                                                } }, "Clear Filter"),
-                                            React.createElement("button", { style: {
-                                                    background: "#4CAF50",
-                                                    color: "#fff",
-                                                    padding: "8px",
-                                                    border: "none",
-                                                    borderRadius: "4px",
-                                                    cursor: "pointer",
-                                                }, onClick: () => {
-                                                    setActiveFilterColumn(null);
-                                                    setCurrentPage(1);
-                                                } }, "Apply Filter"))))))))))))),
-                React.createElement("tbody", null, paginatedData.map((row, rowIndex) => (React.createElement("tr", { key: rowIndex }, columns
+                        .map((col) => (React.createElement(TheadData, { key: col.dataIndex, col: col, handleSort: handleSort, filters: filters, setFilters: setFilters, setCurrentPage: setCurrentPage, activeFilterColumn: activeFilterColumn, setActiveFilterColumn: setActiveFilterColumn, sortConfig: sortConfig, filterDropdownRef: filterDropdownRef, getUniqueColumnValues: getUniqueColumnValues, checkedFilterOptions: checkedFilterOptions, setCheckedFilterOptions: setCheckedFilterOptions, theme: theme, data: data }))))),
+                React.createElement("tbody", null, paginatedData.map((row, rowIndex) => (React.createElement(Tr, { key: rowIndex }, columns
                     .filter((col) => visibleColumns.includes(col.dataIndex))
-                    .map((col) => (React.createElement("td", { key: col.dataIndex }, row[col.dataIndex]))))))))),
-        React.createElement(Pagination, { currentPage: currentPage, totalPages: totalPages, setCurrentPage: setCurrentPage, setRowsPerPage: setRowsPerPage, rowsPerPage: rowsPerPage, data: data, theme: theme })));
+                    .map((col) => (React.createElement(Td, { key: col.dataIndex }, row[col.dataIndex]))))))))),
+        pagination && React.createElement(Pagination, { currentPage: currentPage, totalPages: totalPages, setCurrentPage: setCurrentPage, setRowsPerPage: setRowsPerPage, rowsPerPage: rowsPerPage, data: data, theme: theme })));
 };
 export default Table;
