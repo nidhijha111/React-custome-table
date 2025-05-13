@@ -2,12 +2,15 @@ import React, { useState } from "react";
 import {
   Button,
   CancelButton,
+  ColumnFunctionIcon,
   FilterButtonWrapper,
   FilterCloseButton,
   FilterContentWrapper,
   Input,
   InputCheckbox,
   Label,
+  SearchColumnInput,
+  Th,
 } from "./styledcomponets/style";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUp, faSearch } from "@fortawesome/free-solid-svg-icons";
@@ -30,9 +33,9 @@ export default function TheadData({
   data,
 }) {
   const [showFilterInput, setShowFilterInput] = useState(false);
-  console.log(col,"jnjnjinkink")
+  console.log(col, "jnjnjinkink");
   return (
-    <th key={col.dataIndex}>
+    <Th key={col.dataIndex} width={col?.width}>
       <div
         style={{
           display: "flex",
@@ -48,11 +51,10 @@ export default function TheadData({
             gap: "0.5rem",
             cursor: col.sorter ? "pointer" : "default",
           }}
-          onClick={() => col.sorter && handleSort(col.dataIndex)}
         >
           {!showFilterInput ? col.title : ""}
-          {col.showSearch && showFilterInput && (
-            <Input
+          {col.showSearch === true && showFilterInput === true && (
+            <SearchColumnInput
               type="text"
               placeholder={`Filter ${col.title}`}
               value={filters[col.dataIndex] || ""}
@@ -66,45 +68,49 @@ export default function TheadData({
             />
           )}
         </div>
-        <div
-          style={{
-            display: "flex",
-            gap: "0.75rem",
-            position: "relative",
-          }}
+        <ColumnFunctionIcon
         >
-          {showFilterInput ? (
-            <span
-              onClick={() => {
-                setShowFilterInput(false);
-              }}
-            >
-              <FontAwesomeIcon icon={faTimes} />
-            </span>
-          ) : (
-            <span
-              onClick={() => {
-                setShowFilterInput(true);
-              }}
-            >
-              <FontAwesomeIcon icon={faSearch} />
-            </span>
-          )}
+          {col.showSearch === true &&
+            (showFilterInput ? (
+              <span
+                onClick={() => {
+                  setShowFilterInput(false);
+                }}
+              >
+                <FontAwesomeIcon icon={faTimes} />
+              </span>
+            ) : (
+              <span
+                onClick={() => {
+                  setShowFilterInput(true);
+                }}
+              >
+                <FontAwesomeIcon icon={faSearch} />
+              </span>
+            ))}
           {col.sorter && (
-            <FontAwesomeIcon
-              icon={faArrowUp}
+            <button
               style={{
-                fontSize: "0.75rem",
-                cursor: "pointer",
-                transform:
-                  sortConfig?.key === col.dataIndex &&
-                  sortConfig.direction === "desc"
-                    ? "rotate(180deg)"
-                    : "none",
-                color: sortConfig?.key === col.dataIndex ? "#000" : "#ccc",
-                transition: "transform 0.2s ease",
+                backgroundColor: "none",
+                border: "none",
+                cursor: col.sorter ? "pointer" : "default",
               }}
-            />
+              onClick={() => col.sorter && handleSort(col.dataIndex)}
+            >
+              <FontAwesomeIcon
+                icon={faArrowUp}
+                style={{
+                  cursor: "pointer",
+                  transform:
+                    sortConfig?.key === col.dataIndex &&
+                    sortConfig.direction === "desc"
+                      ? "rotate(180deg)"
+                      : "none",
+                  color: sortConfig?.key === col.dataIndex ? "#000" : "#9f9a9a",
+                  transition: "transform 0.2s ease",
+                }}
+              />
+            </button>
           )}
 
           {col.showFilter && (
@@ -178,8 +184,8 @@ export default function TheadData({
               )}
             </div>
           )}
-        </div>
+        </ColumnFunctionIcon>
       </div>
-    </th>
+    </Th>
   );
 }

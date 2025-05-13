@@ -89,32 +89,57 @@ export const DropdownItem = styled.label `
     margin-right: 0.5rem;
   }
 `;
-export const StyledTable = styled.table `
+export const CustomeTable = styled.table `
   width: 100%;
   border-collapse: collapse;
   min-width: 600px;
   border-radius: 10px;
-  border: 1px solid
-    ${({ themeStyle }) => (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.borderColor) || defaultTheme.borderColor};
-
-  th,
-  td {
-    padding: 0.75rem;
-    border: 1px solid
-      ${({ themeStyle }) => (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.borderColor) || defaultTheme.borderColor};
-    text-align: left;
-  }
-
-  th {
-    background-color: ${({ themeStyle }) => (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.headerBg) || defaultTheme.headerBg};
-    cursor: pointer;
-    user-select: none;
-  }
-
-  tr:hover {
-    background-color: ${({ themeStyle }) => (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.rowHoverColor) || defaultTheme.rowHoverColor};
+  border: 1px solid ${({ themeStyle }) => (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.borderColor) || "#ddd"};
+`;
+export const Th = styled.th `
+  padding: 0.75rem;
+  border: 1px solid ${({ themeStyle }) => (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.borderColor) || "#ddd"};
+  text-align: left;
+  background-color: ${({ themeStyle }) => (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.headerBg) || "#f5f5f5"};
+  cursor: pointer;
+  user-select: none;
+  width: ${({ width }) => typeof width === "number" ? `${width}px` : width || "auto"};
+`;
+export const Td = styled.td `
+  padding: 0.75rem;
+  border: 1px solid ${({ themeStyle }) => (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.borderColor) || "#ddd"};
+  text-align: left;
+`;
+export const Tr = styled.tr `
+  &:hover {
+    background-color: ${({ themeStyle }) => (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.rowHoverColor) || "#f9f9f9"};
   }
 `;
+// export const StyledTable = styled.table<{ themeStyle?: TableTheme }>`
+//   width: 100%;
+//   border-collapse: collapse;
+//   min-width: 600px;
+//   border-radius: 10px;
+//   border: 1px solid
+//     ${({ themeStyle }) => themeStyle?.borderColor || defaultTheme.borderColor};
+//   th,
+//   td {
+//     padding: 0.75rem;
+//     border: 1px solid
+//       ${({ themeStyle }) => themeStyle?.borderColor || defaultTheme.borderColor};
+//     text-align: left;
+//   }
+//   th {
+//     background-color: ${({ themeStyle }) =>
+//       themeStyle?.headerBg || defaultTheme.headerBg};
+//     cursor: pointer;
+//     user-select: none;
+//   }
+//   tr:hover {
+//     background-color: ${({ themeStyle }) =>
+//       themeStyle?.rowHoverColor || defaultTheme.rowHoverColor};
+//   }
+// `;
 export const PaginationWrapper = styled.div `
   display: flex;
   justify-content: space-between;
@@ -130,13 +155,15 @@ export const PaginationControls = styled.div `
 export const FilterContentWrapper = styled.div `
   position: absolute;
   top: 1.5rem;
-  left: 0;
+  right: 0px;
   background: #fff;
   border: 1px solid #ccc;
-  padding: 0.5rem;
-  z-index: 10;
+  padding: 1rem 0.5rem 0.5rem 0.5rem;
+  z-index: 99999;
   max-height: 200px;
   overflow-y: auto;
+  width: auto;
+  scrollbar-width: thin;
 `;
 export const CancelButton = styled.button `
   border: 1px solid #f44336;
@@ -144,29 +171,46 @@ export const CancelButton = styled.button `
   border-radius: 4px;
   color: #f44336;
   cursor: pointer;
+  background-color: none;
 `;
 export const FilterButtonWrapper = styled.div `
   display: flex;
   width: 100%;
-  flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: 0.25rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-top:1rem;
 `;
 export const FilterCloseButton = styled.button `
-      position: absolute;
-      top: 5px;
-      right:5px;
-      background:transparent;
-      border:none;
-      color: ${({ themeStyle }) => (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.textColor) || defaultTheme.textColor};
-      font-size:20px;
-      cursor: pointer;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: transparent;
+  border: none;
+  color: ${({ themeStyle }) => (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.textColor) || defaultTheme.textColor};
+  font-size: 20px;
+  cursor: pointer;
 `;
 export const Label = styled.label `
- font-weight:lighter;
- display: flex;
- align-items: center;
- gap: 0.75rem;
+  font-weight: lighter;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size:12px;
+  width: auto;
 `;
-export const InputCheckbox = styled.input `
-
+export const InputCheckbox = styled.input ``;
+export const SearchColumnInput = styled.input `
+  padding: 0.2rem 0.4rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+  max-width: 100%;
+`;
+export const ColumnFunctionIcon = styled.div `
+  display: flex;
+  gap: 0.25rem;
+  position: relative;
+  justify-content: flex-end;
+  align-items: center;
 `;

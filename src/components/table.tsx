@@ -8,9 +8,11 @@ import {
   DropdownMenu,
   DropdownWrapper,
   Input,
-  StyledTable,
   TableWrapper,
   Toolbar,
+  CustomeTable,
+  Tr,
+  Td
 } from "./styledcomponets/style";
 import type { TableProps } from "../interface/table";
 import Pagination from "./pagination";
@@ -190,9 +192,9 @@ const Table: React.FC<TableProps> = ({
       </Toolbar>
 
       <div style={{ overflowX: "auto" }}>
-        <StyledTable themeStyle={theme}>
+        <CustomeTable themeStyle={theme}>
           <thead>
-            <tr>
+            <Tr>
               {columns
                 .filter((col) => visibleColumns.includes(col.dataIndex))
                 .map((col) => (
@@ -214,20 +216,20 @@ const Table: React.FC<TableProps> = ({
                     data={data}
                   />
                 ))}
-            </tr>
+            </Tr>
           </thead>
           <tbody>
             {paginatedData.map((row, rowIndex) => (
-              <tr key={rowIndex}>
+              <Tr key={rowIndex}>
                 {columns
                   .filter((col) => visibleColumns.includes(col.dataIndex))
                   .map((col) => (
-                    <td key={col.dataIndex}>{row[col.dataIndex]}</td>
+                    <Td key={col.dataIndex}>{row[col.dataIndex]}</Td>
                   ))}
-              </tr>
+              </Tr>
             ))}
           </tbody>
-        </StyledTable>
+        </CustomeTable>
       </div>
 
       {pagination && <Pagination
