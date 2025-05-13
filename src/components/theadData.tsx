@@ -33,7 +33,6 @@ export default function TheadData({
   data,
 }) {
   const [showFilterInput, setShowFilterInput] = useState(false);
-  console.log(col, "jnjnjinkink");
   return (
     <Th key={col.dataIndex} width={col?.width}>
       <div
@@ -68,24 +67,6 @@ export default function TheadData({
           )}
         </div>
         <ColumnFunctionIcon>
-          {col.showSearch === true &&
-            (showFilterInput ? (
-              <span
-                onClick={() => {
-                  setShowFilterInput(false);
-                }}
-              >
-                <FontAwesomeIcon icon={faTimes} style={{fontSize: "12px",}}/>
-              </span>
-            ) : (
-              <span
-                onClick={() => {
-                  setShowFilterInput(true);
-                }}
-              >
-                <FontAwesomeIcon icon={faSearch} />
-              </span>
-            ))}
           {col.sorter && (
             <button
               style={{
@@ -114,7 +95,7 @@ export default function TheadData({
           )}
 
           {col.showFilter && (
-            <div>
+            <>
               <FontAwesomeIcon
                 icon={faFilter}
                 style={{ cursor: "pointer",fontSize: "12px",}}
@@ -127,9 +108,6 @@ export default function TheadData({
               {activeFilterColumn === col.dataIndex && (
                 <FilterContentWrapper ref={filterDropdownRef}>
                   <FilterCloseButton
-                    style={{
-                      fontSize: "12px",
-                    }}
                     onClick={() => setActiveFilterColumn(null)}
                   >
                     <FontAwesomeIcon
@@ -190,8 +168,27 @@ export default function TheadData({
                   </FilterButtonWrapper>
                 </FilterContentWrapper>
               )}
-            </div>
+            </>
           )}
+
+              {col.showSearch === true &&
+            (showFilterInput ? (
+              <span
+                onClick={() => {
+                  setShowFilterInput(false);
+                }}
+              >
+                <FontAwesomeIcon icon={faTimes} style={{fontSize: "12px"}}/>
+              </span>
+            ) : (
+              <span
+                onClick={() => {
+                  setShowFilterInput(true);
+                }}
+              >
+                <FontAwesomeIcon icon={faSearch} style={{fontSize: "12px",}}/>
+              </span>
+            ))}
         </ColumnFunctionIcon>
       </div>
     </Th>

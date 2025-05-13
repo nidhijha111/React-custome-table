@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
-import { Button, DropdownButton, DropdownItem, DropdownMenu, DropdownWrapper, Input, TableWrapper, Toolbar, CustomeTable, Tr, Td } from "./styledcomponets/style";
+import { Button, DropdownButton, DropdownItem, DropdownMenu, DropdownWrapper, Input, TableWrapper, Toolbar, CustomeTable, Tr, Td, } from "./styledcomponets/style";
 import Pagination from "./pagination";
 import TheadData from "./theadData";
-const Table = ({ columns, data, theme = {}, pagination, tableTitle }) => {
+const Table = ({ columns, data, theme = {}, pagination, tableTitle, }) => {
     const [sortConfig, setSortConfig] = useState(null);
     const [searchText, setSearchText] = useState("");
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -121,7 +121,13 @@ const Table = ({ columns, data, theme = {}, pagination, tableTitle }) => {
                         .map((col) => (React.createElement(TheadData, { key: col.dataIndex, col: col, handleSort: handleSort, filters: filters, setFilters: setFilters, setCurrentPage: setCurrentPage, activeFilterColumn: activeFilterColumn, setActiveFilterColumn: setActiveFilterColumn, sortConfig: sortConfig, filterDropdownRef: filterDropdownRef, getUniqueColumnValues: getUniqueColumnValues, checkedFilterOptions: checkedFilterOptions, setCheckedFilterOptions: setCheckedFilterOptions, theme: theme, data: data }))))),
                 React.createElement("tbody", null, paginatedData.map((row, rowIndex) => (React.createElement(Tr, { key: rowIndex }, columns
                     .filter((col) => visibleColumns.includes(col.dataIndex))
-                    .map((col) => (React.createElement(Td, { key: col.dataIndex }, row[col.dataIndex]))))))))),
-        pagination && React.createElement(Pagination, { currentPage: currentPage, totalPages: totalPages, setCurrentPage: setCurrentPage, setRowsPerPage: setRowsPerPage, rowsPerPage: rowsPerPage, data: data, theme: theme })));
+                    .map((col) => {
+                    const value = row[col.dataIndex];
+                    const content = col.customRenderer
+                        ? col.customRenderer(row, value)
+                        : value;
+                    return React.createElement(Td, { key: col.dataIndex }, content);
+                }))))))),
+        pagination && (React.createElement(Pagination, { currentPage: currentPage, totalPages: totalPages, setCurrentPage: setCurrentPage, setRowsPerPage: setRowsPerPage, rowsPerPage: rowsPerPage, data: data, theme: theme }))));
 };
 export default Table;

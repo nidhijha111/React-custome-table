@@ -113,7 +113,8 @@ export const Th = styled.th<{
   themeStyle?: TableTheme;
   width?: number | string;
 }>`
-  padding: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  height: 50px;
   border: 1px solid ${({ themeStyle }) => themeStyle?.borderColor || "#ddd"};
   text-align: left;
   background-color: ${({ themeStyle }) => themeStyle?.headerBg || "#f5f5f5"};

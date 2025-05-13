@@ -97,7 +97,8 @@ export const CustomeTable = styled.table `
   border: 1px solid ${({ themeStyle }) => (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.borderColor) || "#ddd"};
 `;
 export const Th = styled.th `
-  padding: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  height: 50px;
   border: 1px solid ${({ themeStyle }) => (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.borderColor) || "#ddd"};
   text-align: left;
   background-color: ${({ themeStyle }) => (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.headerBg) || "#f5f5f5"};

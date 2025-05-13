@@ -12,7 +12,7 @@ import {
   Toolbar,
   CustomeTable,
   Tr,
-  Td
+  Td,
 } from "./styledcomponets/style";
 import type { TableProps } from "../interface/table";
 import Pagination from "./pagination";
@@ -23,7 +23,7 @@ const Table: React.FC<TableProps> = ({
   data,
   theme = {},
   pagination,
-  tableTitle
+  tableTitle,
 }) => {
   const [sortConfig, setSortConfig] = useState<null | {
     key: string;
@@ -150,9 +150,7 @@ const Table: React.FC<TableProps> = ({
 
   return (
     <TableWrapper themeStyle={theme}>
-      {tableTitle && <div>
-        {tableTitle}
-      </div>}
+      {tableTitle && <div>{tableTitle}</div>}
       <Toolbar>
         <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
           <Input
@@ -223,24 +221,32 @@ const Table: React.FC<TableProps> = ({
               <Tr key={rowIndex}>
                 {columns
                   .filter((col) => visibleColumns.includes(col.dataIndex))
-                  .map((col) => (
-                    <Td key={col.dataIndex}>{row[col.dataIndex]}</Td>
-                  ))}
+                  .map((col) => {
+                    const value = row[col.dataIndex];
+
+                    const content = col.customRenderer
+                      ? col.customRenderer(row, value)
+                      : value;
+
+                    return <Td key={col.dataIndex}>{content}</Td>;
+                  })}
               </Tr>
             ))}
           </tbody>
         </CustomeTable>
       </div>
 
-      {pagination && <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        setCurrentPage={setCurrentPage}
-        setRowsPerPage={setRowsPerPage}
-        rowsPerPage={rowsPerPage}
-        data={data}
-        theme={theme}
-      />}
+      {pagination && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          setCurrentPage={setCurrentPage}
+          setRowsPerPage={setRowsPerPage}
+          rowsPerPage={rowsPerPage}
+          data={data}
+          theme={theme}
+        />
+      )}
     </TableWrapper>
   );
 };
