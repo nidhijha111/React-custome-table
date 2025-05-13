@@ -121,6 +121,8 @@ export const Th = styled.th<{
   user-select: none;
   width: ${({ width }) =>
     typeof width === "number" ? `${width}px` : width || "auto"};
+  max-width: ${({ width }) =>
+    typeof width === "number" ? `${width}px` : width || "auto"};
 `;
 
 export const Td = styled.td<{ themeStyle?: TableTheme }>`
@@ -135,7 +137,6 @@ export const Tr = styled.tr<{ themeStyle?: TableTheme }>`
       themeStyle?.rowHoverColor || "#f9f9f9"};
   }
 `;
-
 
 export const PaginationWrapper = styled.div`
   display: flex;
@@ -180,7 +181,7 @@ export const FilterButtonWrapper = styled.div`
   gap: 0.25rem;
   align-items: center;
   justify-content: space-between;
-  margin-top:1rem;
+  margin-top: 1rem;
 `;
 
 export const FilterCloseButton = styled.button<{ themeStyle?: TableTheme }>`
@@ -199,7 +200,7 @@ export const Label = styled.label`
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  font-size:12px;
+  font-size: 12px;
   width: auto;
 `;
 

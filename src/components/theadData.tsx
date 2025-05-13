@@ -41,7 +41,6 @@ export default function TheadData({
           display: "flex",
           flexDirection: "row",
           justifyContent: "space-between",
-          minWidth: `${col?.width}px !important`,
         }}
       >
         <div
@@ -68,8 +67,7 @@ export default function TheadData({
             />
           )}
         </div>
-        <ColumnFunctionIcon
-        >
+        <ColumnFunctionIcon>
           {col.showSearch === true &&
             (showFilterInput ? (
               <span
@@ -77,7 +75,7 @@ export default function TheadData({
                   setShowFilterInput(false);
                 }}
               >
-                <FontAwesomeIcon icon={faTimes} />
+                <FontAwesomeIcon icon={faTimes} style={{fontSize: "12px",}}/>
               </span>
             ) : (
               <span
@@ -108,7 +106,9 @@ export default function TheadData({
                       : "none",
                   color: sortConfig?.key === col.dataIndex ? "#000" : "#9f9a9a",
                   transition: "transform 0.2s ease",
+                  fontSize: "12px",
                 }}
+
               />
             </button>
           )}
@@ -117,7 +117,7 @@ export default function TheadData({
             <div>
               <FontAwesomeIcon
                 icon={faFilter}
-                style={{ cursor: "pointer" }}
+                style={{ cursor: "pointer",fontSize: "12px",}}
                 onClick={() =>
                   setActiveFilterColumn(
                     activeFilterColumn === col.dataIndex ? null : col.dataIndex
@@ -127,9 +127,17 @@ export default function TheadData({
               {activeFilterColumn === col.dataIndex && (
                 <FilterContentWrapper ref={filterDropdownRef}>
                   <FilterCloseButton
+                    style={{
+                      fontSize: "12px",
+                    }}
                     onClick={() => setActiveFilterColumn(null)}
                   >
-                    <FontAwesomeIcon icon={faTimes} />
+                    <FontAwesomeIcon
+                      icon={faTimes}
+                      style={{
+                        fontSize: "12px",
+                      }}
+                    />
                   </FilterCloseButton>
 
                   {getUniqueColumnValues(data, col.dataIndex).map((val) => (

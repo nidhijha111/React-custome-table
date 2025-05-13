@@ -97,16 +97,17 @@ export const CustomeTable = styled.table `
   border: 1px solid ${({ themeStyle }) => (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.borderColor) || "#ddd"};
 `;
 export const Th = styled.th `
-  padding: 0.75rem;
+  padding: 0.5rem;
   border: 1px solid ${({ themeStyle }) => (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.borderColor) || "#ddd"};
   text-align: left;
   background-color: ${({ themeStyle }) => (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.headerBg) || "#f5f5f5"};
   cursor: pointer;
   user-select: none;
   width: ${({ width }) => typeof width === "number" ? `${width}px` : width || "auto"};
+  max-width: ${({ width }) => typeof width === "number" ? `${width}px` : width || "auto"};
 `;
 export const Td = styled.td `
-  padding: 0.75rem;
+  padding: 0.5rem;
   border: 1px solid ${({ themeStyle }) => (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.borderColor) || "#ddd"};
   text-align: left;
 `;
@@ -115,31 +116,6 @@ export const Tr = styled.tr `
     background-color: ${({ themeStyle }) => (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.rowHoverColor) || "#f9f9f9"};
   }
 `;
-// export const StyledTable = styled.table<{ themeStyle?: TableTheme }>`
-//   width: 100%;
-//   border-collapse: collapse;
-//   min-width: 600px;
-//   border-radius: 10px;
-//   border: 1px solid
-//     ${({ themeStyle }) => themeStyle?.borderColor || defaultTheme.borderColor};
-//   th,
-//   td {
-//     padding: 0.75rem;
-//     border: 1px solid
-//       ${({ themeStyle }) => themeStyle?.borderColor || defaultTheme.borderColor};
-//     text-align: left;
-//   }
-//   th {
-//     background-color: ${({ themeStyle }) =>
-//       themeStyle?.headerBg || defaultTheme.headerBg};
-//     cursor: pointer;
-//     user-select: none;
-//   }
-//   tr:hover {
-//     background-color: ${({ themeStyle }) =>
-//       themeStyle?.rowHoverColor || defaultTheme.rowHoverColor};
-//   }
-// `;
 export const PaginationWrapper = styled.div `
   display: flex;
   justify-content: space-between;
@@ -179,7 +155,7 @@ export const FilterButtonWrapper = styled.div `
   gap: 0.25rem;
   align-items: center;
   justify-content: space-between;
-  margin-top:1rem;
+  margin-top: 1rem;
 `;
 export const FilterCloseButton = styled.button `
   position: absolute;
@@ -196,12 +172,12 @@ export const Label = styled.label `
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  font-size:12px;
+  font-size: 12px;
   width: auto;
 `;
 export const InputCheckbox = styled.input ``;
 export const SearchColumnInput = styled.input `
-  padding: 0.2rem 0.4rem;
+  padding: 0.5rem;
   border: 1px solid #ccc;
   border-radius: 4px;
   width: 100%;

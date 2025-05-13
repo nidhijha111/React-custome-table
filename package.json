@@ -1,6 +1,6 @@
 {
   "name": "react-custome-table",
-  "version": "1.0.33",
+  "version": "1.0.35",
   "description": "A customizable React table component",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
