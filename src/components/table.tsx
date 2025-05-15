@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDownload } from "@fortawesome/free-solid-svg-icons";
+import { faBoxOpen, faDownload } from "@fortawesome/free-solid-svg-icons";
 import {
   Button,
   DropdownButton,
@@ -13,6 +13,7 @@ import {
   DivTable,
   DivRow,
   DivCell,
+  DataNotFoundSection,
 } from "./styledcomponets/style";
 import type { TableProps } from "../interface/table";
 import Pagination from "./pagination";
@@ -159,6 +160,14 @@ const Table: React.FC<TableProps> = ({
     URL.revokeObjectURL(url);
   };
 
+  const toggleAllColumns = () => {
+    if (visibleColumns.length === columns.length) {
+      setVisibleColumns([]);
+    } else {
+      setVisibleColumns(columns.map((col) => col.dataIndex)); 
+    }
+  };
+
   return (
     <TableWrapper themeStyle={theme}>
       {tableTitle && <div>{tableTitle}</div>}
@@ -184,6 +193,14 @@ const Table: React.FC<TableProps> = ({
             </DropdownButton>
             {isOpen && (
               <DropdownMenu>
+                <DropdownItem key="all">
+                  <input
+                    type="checkbox"
+                    checked={visibleColumns.length === columns.length}
+                    onChange={() => toggleAllColumns()}
+                  />
+                  All
+                </DropdownItem>
                 {columns.map((col) => (
                   <DropdownItem key={col.dataIndex}>
                     <input
@@ -231,10 +248,7 @@ const Table: React.FC<TableProps> = ({
           {/* Table Body */}
           {paginatedData.length > 0 ? (
             paginatedData.map((row, rowIndex) => (
-              <DivRow
-                key={rowIndex}
-                themeStyle={theme}
-              >
+              <DivRow key={rowIndex} themeStyle={theme}>
                 {columns
                   .filter((col) => visibleColumns.includes(col.dataIndex))
                   .map((col) => {
@@ -257,24 +271,14 @@ const Table: React.FC<TableProps> = ({
             ))
           ) : (
             <DivRow themeStyle={theme}>
-              <DivCell
-                themeStyle={theme}
-                style={{ textAlign: "center", width: "100%" }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    padding: "1rem",
-                  }}
-                >
-                  <span style={{ fontSize: "2rem", color: "#ccc" }}>📭</span>
-                  <span style={{ marginTop: "0.5rem", color: "#888" }}>
-                    No data available
-                  </span>
-                </div>
-              </DivCell>
+              <DataNotFoundSection themeStyle={theme}>
+                <FontAwesomeIcon
+                  icon={faBoxOpen}
+                  style={{ fontSize: "3rem" }}
+                />
+
+                <span style={{ marginTop: "0.5rem" }}>No data available</span>
+              </DataNotFoundSection>
             </DivRow>
           )}
         </DivTable>

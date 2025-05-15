@@ -74,6 +74,7 @@ export const DropdownButton = styled.button`
 export const DropdownMenu = styled.div`
   position: absolute;
   z-index: 10;
+  right:0px;
   margin-top: 0.5rem;
   width: 220px;
   background-color: #fff;
@@ -106,7 +107,7 @@ export const DivTable = styled.div<{ themeStyle?: TableTheme }>`
   width: 100%;
   border-radius: 10px;
   overflow-x: auto;
-  border: 1px solid ${({ themeStyle }) => themeStyle?.borderColor || '#ddd'};
+  border: 1px solid ${({ themeStyle }) => themeStyle?.borderColor || "#ddd"};
 `;
 
 export const DivRow = styled.div<{
@@ -114,13 +115,15 @@ export const DivRow = styled.div<{
   themeStyle?: TableTheme;
 }>`
   display: flex;
-  min-width: max-content; /* allows horizontal scroll if total width > container */
+  min-width: max-content;
   background-color: ${({ isHeader, themeStyle }) =>
-    isHeader ? themeStyle?.headerBg || '#f5f5f5' : 'transparent'};
+    isHeader ? themeStyle?.headerBg || "#f5f5f5" : "transparent"};
+  /* border: 1px solid ${({ themeStyle }) =>
+    themeStyle?.borderColor || "#ddd"}; */
 
   &:hover {
     background-color: ${({ isHeader, themeStyle }) =>
-      isHeader ? undefined : themeStyle?.rowHoverColor || '#f9f9f9'};
+      isHeader ? undefined : themeStyle?.rowHoverColor || "#f9f9f9"};
   }
 `;
 
@@ -128,18 +131,16 @@ export const DivCell = styled.div<{
   width?: number | string;
   themeStyle?: TableTheme;
 }>`
-  padding: 0.75rem;
+  padding: 0.5rem 0.75rem;
   text-align: left;
-  border: 1px solid ${({ themeStyle }) => themeStyle?.borderColor || '#ddd'};
+  border: 1px solid ${({ themeStyle }) => themeStyle?.borderColor || "#ddd"};
   white-space: nowrap;
-  flex: ${({ width }) => (width ? '0 0 auto' : '1')};
+  flex: ${({ width }) => (width ? "0 0 auto" : "1")};
   width: ${({ width }) =>
-    typeof width === 'number' ? `${width}px` : width || '200px'};
+    typeof width === "number" ? `${width}px` : width || "200px"};
   max-width: ${({ width }) =>
-    typeof width === 'number' ? `${width}px` : width || '200px'};
+    typeof width === "number" ? `${width}px` : width || "200px"};
 `;
-
-
 
 export const PaginationWrapper = styled.div`
   display: flex;
@@ -203,7 +204,7 @@ export const Label = styled.label`
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  font-size: 12px;
+  font-size: 13px;
   width: auto;
 `;
 
@@ -223,4 +224,15 @@ export const ColumnFunctionIcon = styled.div`
   position: relative;
   justify-content: flex-end;
   align-items: center;
+`;
+
+export const DataNotFoundSection = styled.div<{ themeStyle?: TableTheme }>`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: "1rem";
+  height: 300px;
+  width: 100%;
+  justify-content: center;
+  color: ${({ themeStyle }) => themeStyle?.textColor || defaultTheme.textColor};
 `;

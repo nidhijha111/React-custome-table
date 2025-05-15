@@ -63,6 +63,7 @@ export const DropdownButton = styled.button `
 export const DropdownMenu = styled.div `
   position: absolute;
   z-index: 10;
+  right:0px;
   margin-top: 0.5rem;
   width: 220px;
   background-color: #fff;
@@ -93,45 +94,26 @@ export const DivTable = styled.div `
   width: 100%;
   border-radius: 10px;
   overflow-x: auto;
-  border: 1px solid ${({ themeStyle }) => (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.borderColor) || '#ddd'};
+  border: 1px solid ${({ themeStyle }) => (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.borderColor) || "#ddd"};
 `;
 export const DivRow = styled.div `
   display: flex;
-  min-width: max-content; /* allows horizontal scroll if total width > container */
-  background-color: ${({ isHeader, themeStyle }) => isHeader ? (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.headerBg) || '#f5f5f5' : 'transparent'};
+  min-width: max-content;
+  background-color: ${({ isHeader, themeStyle }) => isHeader ? (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.headerBg) || "#f5f5f5" : "transparent"};
+  /* border: 1px solid ${({ themeStyle }) => (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.borderColor) || "#ddd"}; */
 
   &:hover {
-    background-color: ${({ isHeader, themeStyle }) => isHeader ? undefined : (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.rowHoverColor) || '#f9f9f9'};
-  }
-
-  @media (max-width: 768px) {
-    flex-direction: column;
-    min-width: 100%; /* prevent unnecessary scroll on mobile */
+    background-color: ${({ isHeader, themeStyle }) => isHeader ? undefined : (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.rowHoverColor) || "#f9f9f9"};
   }
 `;
 export const DivCell = styled.div `
-  padding: 0.75rem;
+  padding: 0.5rem 0.75rem;
   text-align: left;
-  border: 1px solid ${({ themeStyle }) => (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.borderColor) || '#ddd'};
+  border: 1px solid ${({ themeStyle }) => (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.borderColor) || "#ddd"};
   white-space: nowrap;
-  flex: ${({ width }) => (width ? '0 0 auto' : '1')};
-  width: ${({ width }) => typeof width === 'number' ? `${width}px` : width || '200px'};
-  max-width: ${({ width }) => typeof width === 'number' ? `${width}px` : width || '200px'};
-
-  @media (max-width: 768px) {
-    width: 100%;
-    max-width: 100%;
-    white-space: normal;
-    display: flex;
-    justify-content: space-between;
-
-    &::before {
-      content: attr(data-label);
-      font-weight: 600;
-      color: #666;
-      margin-right: 0.5rem;
-    }
-  }
+  flex: ${({ width }) => (width ? "0 0 auto" : "1")};
+  width: ${({ width }) => typeof width === "number" ? `${width}px` : width || "200px"};
+  max-width: ${({ width }) => typeof width === "number" ? `${width}px` : width || "200px"};
 `;
 export const PaginationWrapper = styled.div `
   display: flex;
@@ -189,7 +171,7 @@ export const Label = styled.label `
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  font-size: 12px;
+  font-size: 13px;
   width: auto;
 `;
 export const InputCheckbox = styled.input ``;
@@ -206,4 +188,14 @@ export const ColumnFunctionIcon = styled.div `
   position: relative;
   justify-content: flex-end;
   align-items: center;
+`;
+export const DataNotFoundSection = styled.div `
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: "1rem";
+  height: 300px;
+  width: 100%;
+  justify-content: center;
+  color: ${({ themeStyle }) => (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.textColor) || defaultTheme.textColor};
 `;

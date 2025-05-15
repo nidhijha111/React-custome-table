@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDownload } from "@fortawesome/free-solid-svg-icons";
-import { Button, DropdownButton, DropdownItem, DropdownMenu, DropdownWrapper, Input, TableWrapper, Toolbar, DivTable, DivRow, DivCell, } from "./styledcomponets/style";
+import { faBoxOpen, faDownload } from "@fortawesome/free-solid-svg-icons";
+import { Button, DropdownButton, DropdownItem, DropdownMenu, DropdownWrapper, Input, TableWrapper, Toolbar, DivTable, DivRow, DivCell, DataNotFoundSection, } from "./styledcomponets/style";
 import Pagination from "./pagination";
 import TheadData from "./theadData";
 const Table = ({ columns, data, theme = {}, pagination, tableTitle, customPaginationHandler, }) => {
@@ -106,6 +106,14 @@ const Table = ({ columns, data, theme = {}, pagination, tableTitle, customPagina
         link.click();
         URL.revokeObjectURL(url);
     };
+    const toggleAllColumns = () => {
+        if (visibleColumns.length === columns.length) {
+            setVisibleColumns([]);
+        }
+        else {
+            setVisibleColumns(columns.map((col) => col.dataIndex));
+        }
+    };
     return (React.createElement(TableWrapper, { themeStyle: theme },
         tableTitle && React.createElement("div", null, tableTitle),
         React.createElement(Toolbar, null,
@@ -120,9 +128,13 @@ const Table = ({ columns, data, theme = {}, pagination, tableTitle, customPagina
                     " Export CSV"),
                 React.createElement(DropdownWrapper, { ref: dropdownRef },
                     React.createElement(DropdownButton, { onClick: () => setIsOpen((o) => !o) }, "Select Columns"),
-                    isOpen && (React.createElement(DropdownMenu, null, columns.map((col) => (React.createElement(DropdownItem, { key: col.dataIndex },
-                        React.createElement("input", { type: "checkbox", checked: visibleColumns.includes(col.dataIndex), onChange: () => toggleColumn(col.dataIndex) }),
-                        col.title)))))))),
+                    isOpen && (React.createElement(DropdownMenu, null,
+                        React.createElement(DropdownItem, { key: "all" },
+                            React.createElement("input", { type: "checkbox", checked: visibleColumns.length === columns.length, onChange: () => toggleAllColumns() }),
+                            "All"),
+                        columns.map((col) => (React.createElement(DropdownItem, { key: col.dataIndex },
+                            React.createElement("input", { type: "checkbox", checked: visibleColumns.includes(col.dataIndex), onChange: () => toggleColumn(col.dataIndex) }),
+                            col.title)))))))),
         React.createElement("div", { style: { overflowX: "auto" } },
             React.createElement(DivTable, { themeStyle: theme },
                 React.createElement(DivRow, { isHeader: true, themeStyle: theme }, columns
@@ -137,15 +149,9 @@ const Table = ({ columns, data, theme = {}, pagination, tableTitle, customPagina
                         : value;
                     return (React.createElement(DivCell, { width: col === null || col === void 0 ? void 0 : col.width, themeStyle: theme, key: col.dataIndex }, content));
                 }))))) : (React.createElement(DivRow, { themeStyle: theme },
-                    React.createElement(DivCell, { themeStyle: theme, style: { textAlign: "center", width: "100%" } },
-                        React.createElement("div", { style: {
-                                display: "flex",
-                                flexDirection: "column",
-                                alignItems: "center",
-                                padding: "1rem",
-                            } },
-                            React.createElement("span", { style: { fontSize: "2rem", color: "#ccc" } }, "\uD83D\uDCED"),
-                            React.createElement("span", { style: { marginTop: "0.5rem", color: "#888" } }, "No data available"))))))),
+                    React.createElement(DataNotFoundSection, { themeStyle: theme },
+                        React.createElement(FontAwesomeIcon, { icon: faBoxOpen, style: { fontSize: "3rem" } }),
+                        React.createElement("span", { style: { marginTop: "0.5rem" } }, "No data available")))))),
         pagination && (React.createElement(Pagination, { currentPage: currentPage, totalPages: totalPages, setCurrentPage: (page) => {
                 setCurrentPage(page);
                 if (customPaginationHandler) {
