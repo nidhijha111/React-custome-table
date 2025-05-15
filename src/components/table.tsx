@@ -203,7 +203,7 @@ const Table: React.FC<TableProps> = ({
       <div style={{ overflowX: "auto" }}>
         <DivTable themeStyle={theme}>
           {/* Table Header */}
-          <DivRow isHeader themeStyle={theme} columnCount={columns?.length}>
+          <DivRow isHeader themeStyle={theme}>
             {columns
               .filter((col) => visibleColumns.includes(col.dataIndex))
               .map((col) => (
@@ -234,7 +234,6 @@ const Table: React.FC<TableProps> = ({
               <DivRow
                 key={rowIndex}
                 themeStyle={theme}
-                columnCount={columns?.length}
               >
                 {columns
                   .filter((col) => visibleColumns.includes(col.dataIndex))
@@ -249,7 +248,6 @@ const Table: React.FC<TableProps> = ({
                         width={col?.width}
                         themeStyle={theme}
                         key={col.dataIndex}
-                        columnCount={columns?.length}
                       >
                         {content}
                       </DivCell>
@@ -258,10 +256,9 @@ const Table: React.FC<TableProps> = ({
               </DivRow>
             ))
           ) : (
-            <DivRow themeStyle={theme} columnCount={columns?.length}>
+            <DivRow themeStyle={theme}>
               <DivCell
                 themeStyle={theme}
-                columnCount={columns?.length}
                 style={{ textAlign: "center", width: "100%" }}
               >
                 <div

@@ -125,19 +125,19 @@ const Table = ({ columns, data, theme = {}, pagination, tableTitle, customPagina
                         col.title)))))))),
         React.createElement("div", { style: { overflowX: "auto" } },
             React.createElement(DivTable, { themeStyle: theme },
-                React.createElement(DivRow, { isHeader: true, themeStyle: theme, columnCount: columns === null || columns === void 0 ? void 0 : columns.length }, columns
+                React.createElement(DivRow, { isHeader: true, themeStyle: theme }, columns
                     .filter((col) => visibleColumns.includes(col.dataIndex))
                     .map((col) => (React.createElement(TheadData, { key: col.dataIndex, col: col, handleSort: handleSort, filters: filters, setFilters: setFilters, setCurrentPage: setCurrentPage, activeFilterColumn: activeFilterColumn, setActiveFilterColumn: setActiveFilterColumn, sortConfig: sortConfig, filterDropdownRef: filterDropdownRef, getUniqueColumnValues: getUniqueColumnValues, checkedFilterOptions: checkedFilterOptions, setCheckedFilterOptions: setCheckedFilterOptions, theme: theme, data: data, columnCount: columns === null || columns === void 0 ? void 0 : columns.length })))),
-                paginatedData.length > 0 ? (paginatedData.map((row, rowIndex) => (React.createElement(DivRow, { key: rowIndex, themeStyle: theme, columnCount: columns === null || columns === void 0 ? void 0 : columns.length }, columns
+                paginatedData.length > 0 ? (paginatedData.map((row, rowIndex) => (React.createElement(DivRow, { key: rowIndex, themeStyle: theme }, columns
                     .filter((col) => visibleColumns.includes(col.dataIndex))
                     .map((col) => {
                     const value = row[col.dataIndex];
                     const content = col.customRenderer
                         ? col.customRenderer(row, value)
                         : value;
-                    return (React.createElement(DivCell, { width: col === null || col === void 0 ? void 0 : col.width, themeStyle: theme, key: col.dataIndex, columnCount: columns === null || columns === void 0 ? void 0 : columns.length }, content));
-                }))))) : (React.createElement(DivRow, { themeStyle: theme, columnCount: columns === null || columns === void 0 ? void 0 : columns.length },
-                    React.createElement(DivCell, { themeStyle: theme, columnCount: columns === null || columns === void 0 ? void 0 : columns.length, style: { textAlign: "center", width: "100%" } },
+                    return (React.createElement(DivCell, { width: col === null || col === void 0 ? void 0 : col.width, themeStyle: theme, key: col.dataIndex }, content));
+                }))))) : (React.createElement(DivRow, { themeStyle: theme },
+                    React.createElement(DivCell, { themeStyle: theme, style: { textAlign: "center", width: "100%" } },
                         React.createElement("div", { style: {
                                 display: "flex",
                                 flexDirection: "column",

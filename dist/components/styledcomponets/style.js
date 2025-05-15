@@ -92,36 +92,38 @@ export const DropdownItem = styled.label `
 export const DivTable = styled.div `
   width: 100%;
   border-radius: 10px;
-  overflow-x: auto; 
-  overflow-y: auto; 
-  max-height: 500px; 
+  overflow-x: auto;
   border: 1px solid ${({ themeStyle }) => (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.borderColor) || '#ddd'};
 `;
 export const DivRow = styled.div `
   display: flex;
-  flex-direction: row;
-  width: 100%;
+  min-width: max-content; /* allows horizontal scroll if total width > container */
   background-color: ${({ isHeader, themeStyle }) => isHeader ? (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.headerBg) || '#f5f5f5' : 'transparent'};
-  /* border-bottom: 1px solid ${({ themeStyle }) => (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.borderColor) || '#ddd'}; */
 
   &:hover {
     background-color: ${({ isHeader, themeStyle }) => isHeader ? undefined : (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.rowHoverColor) || '#f9f9f9'};
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    min-width: 100%; /* prevent unnecessary scroll on mobile */
   }
 `;
 export const DivCell = styled.div `
   padding: 0.75rem;
   text-align: left;
   border: 1px solid ${({ themeStyle }) => (themeStyle === null || themeStyle === void 0 ? void 0 : themeStyle.borderColor) || '#ddd'};
-  flex: 1;
-  width: ${({ width }) => (typeof width === 'number' ? `${width}px` : width || 'auto')};
   white-space: nowrap;
-  flex-basis: ${({ columnCount }) => (100 / columnCount)}%;
+  flex: ${({ width }) => (width ? '0 0 auto' : '1')};
+  width: ${({ width }) => typeof width === 'number' ? `${width}px` : width || '200px'};
+  max-width: ${({ width }) => typeof width === 'number' ? `${width}px` : width || '200px'};
 
   @media (max-width: 768px) {
-    width: 100%; 
-    display: block; 
-    margin-bottom: 0.5rem; 
+    width: 100%;
+    max-width: 100%;
     white-space: normal;
+    display: flex;
+    justify-content: space-between;
 
     &::before {
       content: attr(data-label);

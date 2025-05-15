@@ -18,12 +18,10 @@ export declare const DivTable: import("styled-components/dist/types").IStyledCom
 export declare const DivRow: import("styled-components/dist/types").IStyledComponentBase<"web", import("styled-components/dist/types").Substitute<import("react").DetailedHTMLProps<import("react").HTMLAttributes<HTMLDivElement>, HTMLDivElement>, {
     isHeader?: boolean;
     themeStyle?: TableTheme;
-    columnCount: number;
 }>> & string;
 export declare const DivCell: import("styled-components/dist/types").IStyledComponentBase<"web", import("styled-components/dist/types").Substitute<import("react").DetailedHTMLProps<import("react").HTMLAttributes<HTMLDivElement>, HTMLDivElement>, {
     width?: number | string;
     themeStyle?: TableTheme;
-    columnCount: number;
 }>> & string;
 export declare const PaginationWrapper: import("styled-components/dist/types").IStyledComponentBase<"web", import("styled-components").FastOmit<import("react").DetailedHTMLProps<import("react").HTMLAttributes<HTMLDivElement>, HTMLDivElement>, never>> & string;
 export declare const PaginationControls: import("styled-components/dist/types").IStyledComponentBase<"web", import("styled-components").FastOmit<import("react").DetailedHTMLProps<import("react").HTMLAttributes<HTMLDivElement>, HTMLDivElement>, never>> & string;

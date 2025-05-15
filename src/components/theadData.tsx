@@ -35,7 +35,7 @@ export default function TheadData({
 }) {
   const [showFilterInput, setShowFilterInput] = useState(false);
   return (
-    <DivCell key={col.dataIndex} width={col?.width} themeStyle={theme} columnCount={columnCount}>
+    <DivCell key={col.dataIndex} width={col?.width} themeStyle={theme}>
       <div
         style={{
           display: "flex",
