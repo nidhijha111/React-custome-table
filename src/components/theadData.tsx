@@ -3,6 +3,7 @@ import {
   Button,
   CancelButton,
   ColumnFunctionIcon,
+  DivCell,
   FilterButtonWrapper,
   FilterCloseButton,
   FilterContentWrapper,
@@ -10,7 +11,6 @@ import {
   InputCheckbox,
   Label,
   SearchColumnInput,
-  Th,
 } from "./styledcomponets/style";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUp, faSearch } from "@fortawesome/free-solid-svg-icons";
@@ -31,10 +31,11 @@ export default function TheadData({
   setCheckedFilterOptions,
   theme,
   data,
+  columnCount
 }) {
   const [showFilterInput, setShowFilterInput] = useState(false);
   return (
-    <Th key={col.dataIndex} width={col?.width}>
+    <DivCell key={col.dataIndex} width={col?.width} themeStyle={theme} columnCount={columnCount}>
       <div
         style={{
           display: "flex",
@@ -191,6 +192,6 @@ export default function TheadData({
             ))}
         </ColumnFunctionIcon>
       </div>
-    </Th>
+    </DivCell>
   );
 }

@@ -101,43 +101,58 @@ export const DropdownItem = styled.label`
     margin-right: 0.5rem;
   }
 `;
-export const CustomeTable = styled.table<{ themeStyle?: TableTheme }>`
+
+export const DivTable = styled.div<{ themeStyle?: TableTheme }>`
   width: 100%;
-  border-collapse: collapse;
-  min-width: 600px;
   border-radius: 10px;
-  border: 1px solid ${({ themeStyle }) => themeStyle?.borderColor || "#ddd"};
+  overflow-x: auto; 
+  overflow-y: auto; 
+  max-height: 500px; 
+  border: 1px solid ${({ themeStyle }) => themeStyle?.borderColor || '#ddd'};
 `;
 
-export const Th = styled.th<{
-  themeStyle?: TableTheme;
-  width?: number | string;
-}>`
-  padding: 0.25rem 0.5rem;
-  height: 50px;
-  border: 1px solid ${({ themeStyle }) => themeStyle?.borderColor || "#ddd"};
-  text-align: left;
-  background-color: ${({ themeStyle }) => themeStyle?.headerBg || "#f5f5f5"};
-  cursor: pointer;
-  user-select: none;
-  width: ${({ width }) =>
-    typeof width === "number" ? `${width}px` : width || "auto"};
-  max-width: ${({ width }) =>
-    typeof width === "number" ? `${width}px` : width || "auto"};
-`;
+export const DivRow = styled.div<{ isHeader?: boolean; themeStyle?: TableTheme; columnCount: number }>`
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  background-color: ${({ isHeader, themeStyle }) =>
+    isHeader ? themeStyle?.headerBg || '#f5f5f5' : 'transparent'};
+  /* border-bottom: 1px solid ${({ themeStyle }) => themeStyle?.borderColor || '#ddd'}; */
 
-export const Td = styled.td<{ themeStyle?: TableTheme }>`
-  padding: 0.5rem;
-  border: 1px solid ${({ themeStyle }) => themeStyle?.borderColor || "#ddd"};
-  text-align: left;
-`;
-
-export const Tr = styled.tr<{ themeStyle?: TableTheme }>`
   &:hover {
-    background-color: ${({ themeStyle }) =>
-      themeStyle?.rowHoverColor || "#f9f9f9"};
+    background-color: ${({ isHeader, themeStyle }) =>
+      isHeader ? undefined : themeStyle?.rowHoverColor || '#f9f9f9'};
   }
 `;
+
+export const DivCell = styled.div<{
+  width?: number | string;
+  themeStyle?: TableTheme;
+  columnCount: number;
+}>`
+  padding: 0.75rem;
+  text-align: left;
+  border: 1px solid ${({ themeStyle }) => themeStyle?.borderColor || '#ddd'};
+  flex: 1;
+  width: ${({ width }) => (typeof width === 'number' ? `${width}px` : width || 'auto')};
+  white-space: nowrap;
+  flex-basis: ${({ columnCount }) => (100 / columnCount)}%;
+
+  @media (max-width: 768px) {
+    width: 100%; 
+    display: block; 
+    margin-bottom: 0.5rem; 
+    white-space: normal;
+
+    &::before {
+      content: attr(data-label);
+      font-weight: 600;
+      color: #666;
+      margin-right: 0.5rem;
+    }
+  }
+`;
+
 
 export const PaginationWrapper = styled.div`
   display: flex;

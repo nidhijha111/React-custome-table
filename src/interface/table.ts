@@ -11,6 +11,8 @@ export type TableProps = {
   tableSubTitle?:string;
   columnViewOtion?:boolean;
   columnMove?:boolean;
+  customPaginationHandler?: (page: number, rowsPerPage: number) => void;
+   totalRecords?: number;
 };
 
 export type TableTheme = {

@@ -10,9 +10,9 @@ import {
   Input,
   TableWrapper,
   Toolbar,
-  CustomeTable,
-  Tr,
-  Td,
+  DivTable,
+  DivRow,
+  DivCell,
 } from "./styledcomponets/style";
 import type { TableProps } from "../interface/table";
 import Pagination from "./pagination";
@@ -24,6 +24,7 @@ const Table: React.FC<TableProps> = ({
   theme = {},
   pagination,
   tableTitle,
+  customPaginationHandler,
 }) => {
   const [sortConfig, setSortConfig] = useState<null | {
     key: string;
@@ -113,9 +114,19 @@ const Table: React.FC<TableProps> = ({
   }, [sortedData, checkedFilterOptions]);
 
   const paginatedData = useMemo(() => {
+    if (customPaginationHandler) {
+      // If using external handler, assume data is already paginated externally
+      return data;
+    }
     const start = (currentPage - 1) * rowsPerPage;
     return finalFilteredData.slice(start, start + rowsPerPage);
-  }, [finalFilteredData, currentPage, rowsPerPage]);
+  }, [
+    data,
+    finalFilteredData,
+    currentPage,
+    rowsPerPage,
+    customPaginationHandler,
+  ]);
 
   const totalPages = Math.max(
     1,
@@ -190,60 +201,107 @@ const Table: React.FC<TableProps> = ({
       </Toolbar>
 
       <div style={{ overflowX: "auto" }}>
-        <CustomeTable themeStyle={theme}>
-          <thead>
-            <Tr>
-              {columns
-                .filter((col) => visibleColumns.includes(col.dataIndex))
-                .map((col) => (
-                  <TheadData
-                    key={col.dataIndex}
-                    col={col}
-                    handleSort={handleSort}
-                    filters={filters}
-                    setFilters={setFilters}
-                    setCurrentPage={setCurrentPage}
-                    activeFilterColumn={activeFilterColumn}
-                    setActiveFilterColumn={setActiveFilterColumn}
-                    sortConfig={sortConfig}
-                    filterDropdownRef={filterDropdownRef}
-                    getUniqueColumnValues={getUniqueColumnValues}
-                    checkedFilterOptions={checkedFilterOptions}
-                    setCheckedFilterOptions={setCheckedFilterOptions}
-                    theme={theme}
-                    data={data}
-                  />
-                ))}
-            </Tr>
-          </thead>
-          <tbody>
-            {paginatedData.map((row, rowIndex) => (
-              <Tr key={rowIndex}>
+        <DivTable themeStyle={theme}>
+          {/* Table Header */}
+          <DivRow isHeader themeStyle={theme} columnCount={columns?.length}>
+            {columns
+              .filter((col) => visibleColumns.includes(col.dataIndex))
+              .map((col) => (
+                <TheadData
+                  key={col.dataIndex}
+                  col={col}
+                  handleSort={handleSort}
+                  filters={filters}
+                  setFilters={setFilters}
+                  setCurrentPage={setCurrentPage}
+                  activeFilterColumn={activeFilterColumn}
+                  setActiveFilterColumn={setActiveFilterColumn}
+                  sortConfig={sortConfig}
+                  filterDropdownRef={filterDropdownRef}
+                  getUniqueColumnValues={getUniqueColumnValues}
+                  checkedFilterOptions={checkedFilterOptions}
+                  setCheckedFilterOptions={setCheckedFilterOptions}
+                  theme={theme}
+                  data={data}
+                  columnCount={columns?.length}
+                />
+              ))}
+          </DivRow>
+
+          {/* Table Body */}
+          {paginatedData.length > 0 ? (
+            paginatedData.map((row, rowIndex) => (
+              <DivRow
+                key={rowIndex}
+                themeStyle={theme}
+                columnCount={columns?.length}
+              >
                 {columns
                   .filter((col) => visibleColumns.includes(col.dataIndex))
                   .map((col) => {
                     const value = row[col.dataIndex];
-
                     const content = col.customRenderer
                       ? col.customRenderer(row, value)
                       : value;
 
-                    return <Td key={col.dataIndex}>{content}</Td>;
+                    return (
+                      <DivCell
+                        width={col?.width}
+                        themeStyle={theme}
+                        key={col.dataIndex}
+                        columnCount={columns?.length}
+                      >
+                        {content}
+                      </DivCell>
+                    );
                   })}
-              </Tr>
-            ))}
-          </tbody>
-        </CustomeTable>
+              </DivRow>
+            ))
+          ) : (
+            <DivRow themeStyle={theme} columnCount={columns?.length}>
+              <DivCell
+                themeStyle={theme}
+                columnCount={columns?.length}
+                style={{ textAlign: "center", width: "100%" }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    padding: "1rem",
+                  }}
+                >
+                  <span style={{ fontSize: "2rem", color: "#ccc" }}>📭</span>
+                  <span style={{ marginTop: "0.5rem", color: "#888" }}>
+                    No data available
+                  </span>
+                </div>
+              </DivCell>
+            </DivRow>
+          )}
+        </DivTable>
       </div>
 
       {pagination && (
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
-          setCurrentPage={setCurrentPage}
-          setRowsPerPage={setRowsPerPage}
+          setCurrentPage={(page) => {
+            setCurrentPage(page);
+            if (customPaginationHandler) {
+              customPaginationHandler(page, rowsPerPage);
+            }
+          }}
+          setRowsPerPage={(limit) => {
+            setRowsPerPage(limit);
+            setCurrentPage(1);
+            if (customPaginationHandler) {
+              customPaginationHandler(1, limit);
+            }
+          }}
           rowsPerPage={rowsPerPage}
-          data={data}
+          data={customPaginationHandler ? [] : finalFilteredData}
           theme={theme}
         />
       )}
