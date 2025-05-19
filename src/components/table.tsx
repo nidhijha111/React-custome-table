@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBoxOpen, faDownload } from "@fortawesome/free-solid-svg-icons";
+import { faBoxOpen, faChevronDown, faDownload } from "@fortawesome/free-solid-svg-icons";
 import {
   Button,
   DropdownButton,
@@ -116,7 +116,6 @@ const Table: React.FC<TableProps> = ({
 
   const paginatedData = useMemo(() => {
     if (customPaginationHandler) {
-      // If using external handler, assume data is already paginated externally
       return data;
     }
     const start = (currentPage - 1) * rowsPerPage;
@@ -188,8 +187,8 @@ const Table: React.FC<TableProps> = ({
             <FontAwesomeIcon icon={faDownload} /> Export CSV
           </Button>
           <DropdownWrapper ref={dropdownRef}>
-            <DropdownButton onClick={() => setIsOpen((o) => !o)}>
-              Select Columns
+            <DropdownButton onClick={() => setIsOpen((o) => !o)} themeStyle={theme}>
+              <span>Columns</span> <span><FontAwesomeIcon icon={faChevronDown} /></span>
             </DropdownButton>
             {isOpen && (
               <DropdownMenu>
@@ -219,7 +218,6 @@ const Table: React.FC<TableProps> = ({
 
       <div style={{ overflowX: "auto" }}>
         <DivTable themeStyle={theme}>
-          {/* Table Header */}
           <DivRow isHeader themeStyle={theme}>
             {columns
               .filter((col) => visibleColumns.includes(col.dataIndex))
@@ -240,12 +238,9 @@ const Table: React.FC<TableProps> = ({
                   setCheckedFilterOptions={setCheckedFilterOptions}
                   theme={theme}
                   data={data}
-                  columnCount={columns?.length}
                 />
               ))}
           </DivRow>
-
-          {/* Table Body */}
           {paginatedData.length > 0 ? (
             paginatedData.map((row, rowIndex) => (
               <DivRow key={rowIndex} themeStyle={theme}>

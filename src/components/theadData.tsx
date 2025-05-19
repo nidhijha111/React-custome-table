@@ -7,6 +7,7 @@ import {
   FilterButtonWrapper,
   FilterCloseButton,
   FilterContentWrapper,
+  FilterOptionWrapper,
   Input,
   InputCheckbox,
   Label,
@@ -31,16 +32,17 @@ export default function TheadData({
   setCheckedFilterOptions,
   theme,
   data,
-  columnCount
 }) {
   const [showFilterInput, setShowFilterInput] = useState(false);
   return (
-    <DivCell key={col.dataIndex} width={col?.width} themeStyle={theme}>
+    <DivCell key={col.dataIndex} width={col?.width} themeStyle={theme} isHeader>
       <div
         style={{
           display: "flex",
           flexDirection: "row",
           justifyContent: "space-between",
+          gap:"0.5rem",
+          width:"100%"
         }}
       >
         <div
@@ -68,12 +70,42 @@ export default function TheadData({
           )}
         </div>
         <ColumnFunctionIcon>
+          {col.showSearch === true &&
+            (showFilterInput ? (
+              <span
+                onClick={() => {
+                  setShowFilterInput(false);
+                }}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <FontAwesomeIcon icon={faTimes} style={{ fontSize: "14px" }} />
+              </span>
+            ) : (
+              <span
+                onClick={() => {
+                  setShowFilterInput(true);
+                }}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <FontAwesomeIcon icon={faSearch} style={{ fontSize: "13px" }} />
+              </span>
+            ))}
           {col.sorter && (
             <button
               style={{
                 backgroundColor: "none",
                 border: "none",
                 cursor: col.sorter ? "pointer" : "default",
+                padding:"0px",
+                margin:"0px",
               }}
               onClick={() => col.sorter && handleSort(col.dataIndex)}
             >
@@ -90,7 +122,6 @@ export default function TheadData({
                   transition: "transform 0.2s ease",
                   fontSize: "12px",
                 }}
-
               />
             </button>
           )}
@@ -99,7 +130,7 @@ export default function TheadData({
             <>
               <FontAwesomeIcon
                 icon={faFilter}
-                style={{ cursor: "pointer",fontSize: "12px",}}
+                style={{ cursor: "pointer", fontSize: "12px" }}
                 onClick={() =>
                   setActiveFilterColumn(
                     activeFilterColumn === col.dataIndex ? null : col.dataIndex
@@ -114,37 +145,39 @@ export default function TheadData({
                     <FontAwesomeIcon
                       icon={faTimes}
                       style={{
-                        fontSize: "12px",
+                        fontSize: "18px",
                       }}
                     />
                   </FilterCloseButton>
-
-                  {getUniqueColumnValues(data, col.dataIndex).map((val) => (
-                    <Label key={val}>
-                      <InputCheckbox
-                        type="checkbox"
-                        checked={
-                          checkedFilterOptions[col.dataIndex]?.includes(val) ??
-                          false
-                        }
-                        onChange={(e) => {
-                          const checked = e.target.checked;
-                          setCheckedFilterOptions((prev) => {
-                            const existing = prev[col.dataIndex] || [];
-                            const updated = checked
-                              ? [...existing, val]
-                              : existing.filter((v) => v !== val);
-                            return {
-                              ...prev,
-                              [col.dataIndex]: updated,
-                            };
-                          });
-                          setCurrentPage(1);
-                        }}
-                      />
-                      {val}
-                    </Label>
-                  ))}
+                  <FilterOptionWrapper width={col?.width}>
+                    {getUniqueColumnValues(data, col.dataIndex).map((val) => (
+                      <Label key={val} themeStyle={theme}>
+                        <InputCheckbox
+                          type="checkbox"
+                          checked={
+                            checkedFilterOptions[col.dataIndex]?.includes(
+                              val
+                            ) ?? false
+                          }
+                          onChange={(e) => {
+                            const checked = e.target.checked;
+                            setCheckedFilterOptions((prev) => {
+                              const existing = prev[col.dataIndex] || [];
+                              const updated = checked
+                                ? [...existing, val]
+                                : existing.filter((v) => v !== val);
+                              return {
+                                ...prev,
+                                [col.dataIndex]: updated,
+                              };
+                            });
+                            setCurrentPage(1);
+                          }}
+                        />
+                        {val}
+                      </Label>
+                    ))}
+                  </FilterOptionWrapper>
                   <FilterButtonWrapper>
                     <CancelButton
                       onClick={() => {
@@ -171,25 +204,6 @@ export default function TheadData({
               )}
             </>
           )}
-
-              {col.showSearch === true &&
-            (showFilterInput ? (
-              <span
-                onClick={() => {
-                  setShowFilterInput(false);
-                }}
-              >
-                <FontAwesomeIcon icon={faTimes} style={{fontSize: "12px"}}/>
-              </span>
-            ) : (
-              <span
-                onClick={() => {
-                  setShowFilterInput(true);
-                }}
-              >
-                <FontAwesomeIcon icon={faSearch} style={{fontSize: "12px",}}/>
-              </span>
-            ))}
         </ColumnFunctionIcon>
       </div>
     </DivCell>

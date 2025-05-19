@@ -63,18 +63,19 @@ export const DropdownWrapper = styled.div`
   display: inline-block;
 `;
 
-export const DropdownButton = styled.button`
+export const DropdownButton = styled.button<{ themeStyle?: TableTheme }>`
   padding: 0.4rem 0.8rem;
-  background-color: #f3f4f6;
+  background-color:#fff;
   border: 1px solid #ccc;
   border-radius: 4px;
   cursor: pointer;
+  border: 1px solid ${({ themeStyle }) => themeStyle?.borderColor || "#ddd"};
 `;
 
 export const DropdownMenu = styled.div`
   position: absolute;
   z-index: 10;
-  right:0px;
+  right: 0px;
   margin-top: 0.5rem;
   width: 220px;
   background-color: #fff;
@@ -118,8 +119,6 @@ export const DivRow = styled.div<{
   min-width: max-content;
   background-color: ${({ isHeader, themeStyle }) =>
     isHeader ? themeStyle?.headerBg || "#f5f5f5" : "transparent"};
-  /* border: 1px solid ${({ themeStyle }) =>
-    themeStyle?.borderColor || "#ddd"}; */
 
   &:hover {
     background-color: ${({ isHeader, themeStyle }) =>
@@ -130,8 +129,8 @@ export const DivRow = styled.div<{
 export const DivCell = styled.div<{
   width?: number | string;
   themeStyle?: TableTheme;
+  isHeader?: boolean;
 }>`
-  padding: 0.5rem 0.75rem;
   text-align: left;
   border: 1px solid ${({ themeStyle }) => themeStyle?.borderColor || "#ddd"};
   white-space: nowrap;
@@ -140,6 +139,11 @@ export const DivCell = styled.div<{
     typeof width === "number" ? `${width}px` : width || "200px"};
   max-width: ${({ width }) =>
     typeof width === "number" ? `${width}px` : width || "200px"};
+  display: flex;
+  align-items: center;
+  height: ${({ isHeader }) => (isHeader ? "50px" : "")};
+  font-weight: ${({ isHeader }) => (isHeader ? "600" : "")};
+  padding: ${({ isHeader }) => (isHeader ? "0.25rem 0.75rem" : "0.5rem 0.75rem")};
 `;
 
 export const PaginationWrapper = styled.div`
@@ -162,12 +166,10 @@ export const FilterContentWrapper = styled.div`
   right: 0px;
   background: #fff;
   border: 1px solid #ccc;
-  padding: 1rem 0.5rem 0.5rem 0.5rem;
-  z-index: 99999;
-  max-height: 200px;
-  overflow-y: auto;
+  z-index: 20;
   width: auto;
   scrollbar-width: thin;
+  padding-top: 35px;
 `;
 
 export const CancelButton = styled.button`
@@ -176,9 +178,15 @@ export const CancelButton = styled.button`
   border-radius: 4px;
   color: #f44336;
   cursor: pointer;
-  background-color: none;
+  background: none;
 `;
-
+export const FilterOptionWrapper = styled.div<{ width?: number | string }>`
+  max-height: 200px;
+  overflow-y: auto;
+  overflow-x: auto;
+  max-width: ${({ width }) =>
+    typeof width === "number" ? `${width}px` : width || "180px"};
+`;
 export const FilterButtonWrapper = styled.div`
   display: flex;
   width: 100%;
@@ -186,26 +194,28 @@ export const FilterButtonWrapper = styled.div`
   align-items: center;
   justify-content: space-between;
   margin-top: 1rem;
+  padding: 10px 15px 10px 15px;
 `;
 
 export const FilterCloseButton = styled.button<{ themeStyle?: TableTheme }>`
   position: absolute;
-  top: 5px;
+  top: -5px;
   right: 5px;
   background: transparent;
   border: none;
   color: ${({ themeStyle }) => themeStyle?.textColor || defaultTheme.textColor};
-  font-size: 20px;
+  font-size: 28px;
   cursor: pointer;
 `;
 
-export const Label = styled.label`
-  font-weight: lighter;
+export const Label = styled.label<{ themeStyle?: TableTheme }>`
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  font-size: 13px;
+  font-size: 14px;
   width: auto;
+  border-top: 1px solid ${({ themeStyle }) => themeStyle?.borderColor || "#ddd"};
+  padding: 10px 15px;
 `;
 
 export const InputCheckbox = styled.input``;
@@ -220,7 +230,7 @@ export const SearchColumnInput = styled.input`
 
 export const ColumnFunctionIcon = styled.div`
   display: flex;
-  gap: 0.25rem;
+  gap: 0.35rem;
   position: relative;
   justify-content: flex-end;
   align-items: center;

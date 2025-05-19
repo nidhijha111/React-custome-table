@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBoxOpen, faDownload } from "@fortawesome/free-solid-svg-icons";
+import { faBoxOpen, faChevronDown, faDownload } from "@fortawesome/free-solid-svg-icons";
 import { Button, DropdownButton, DropdownItem, DropdownMenu, DropdownWrapper, Input, TableWrapper, Toolbar, DivTable, DivRow, DivCell, DataNotFoundSection, } from "./styledcomponets/style";
 import Pagination from "./pagination";
 import TheadData from "./theadData";
@@ -73,7 +73,6 @@ const Table = ({ columns, data, theme = {}, pagination, tableTitle, customPagina
     }, [sortedData, checkedFilterOptions]);
     const paginatedData = useMemo(() => {
         if (customPaginationHandler) {
-            // If using external handler, assume data is already paginated externally
             return data;
         }
         const start = (currentPage - 1) * rowsPerPage;
@@ -127,7 +126,11 @@ const Table = ({ columns, data, theme = {}, pagination, tableTitle, customPagina
                     React.createElement(FontAwesomeIcon, { icon: faDownload }),
                     " Export CSV"),
                 React.createElement(DropdownWrapper, { ref: dropdownRef },
-                    React.createElement(DropdownButton, { onClick: () => setIsOpen((o) => !o) }, "Select Columns"),
+                    React.createElement(DropdownButton, { onClick: () => setIsOpen((o) => !o), themeStyle: theme },
+                        React.createElement("span", null, "Columns"),
+                        " ",
+                        React.createElement("span", null,
+                            React.createElement(FontAwesomeIcon, { icon: faChevronDown }))),
                     isOpen && (React.createElement(DropdownMenu, null,
                         React.createElement(DropdownItem, { key: "all" },
                             React.createElement("input", { type: "checkbox", checked: visibleColumns.length === columns.length, onChange: () => toggleAllColumns() }),
@@ -139,7 +142,7 @@ const Table = ({ columns, data, theme = {}, pagination, tableTitle, customPagina
             React.createElement(DivTable, { themeStyle: theme },
                 React.createElement(DivRow, { isHeader: true, themeStyle: theme }, columns
                     .filter((col) => visibleColumns.includes(col.dataIndex))
-                    .map((col) => (React.createElement(TheadData, { key: col.dataIndex, col: col, handleSort: handleSort, filters: filters, setFilters: setFilters, setCurrentPage: setCurrentPage, activeFilterColumn: activeFilterColumn, setActiveFilterColumn: setActiveFilterColumn, sortConfig: sortConfig, filterDropdownRef: filterDropdownRef, getUniqueColumnValues: getUniqueColumnValues, checkedFilterOptions: checkedFilterOptions, setCheckedFilterOptions: setCheckedFilterOptions, theme: theme, data: data, columnCount: columns === null || columns === void 0 ? void 0 : columns.length })))),
+                    .map((col) => (React.createElement(TheadData, { key: col.dataIndex, col: col, handleSort: handleSort, filters: filters, setFilters: setFilters, setCurrentPage: setCurrentPage, activeFilterColumn: activeFilterColumn, setActiveFilterColumn: setActiveFilterColumn, sortConfig: sortConfig, filterDropdownRef: filterDropdownRef, getUniqueColumnValues: getUniqueColumnValues, checkedFilterOptions: checkedFilterOptions, setCheckedFilterOptions: setCheckedFilterOptions, theme: theme, data: data })))),
                 paginatedData.length > 0 ? (paginatedData.map((row, rowIndex) => (React.createElement(DivRow, { key: rowIndex, themeStyle: theme }, columns
                     .filter((col) => visibleColumns.includes(col.dataIndex))
                     .map((col) => {
