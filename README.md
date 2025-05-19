@@ -177,8 +177,19 @@ import CustomTable from 'react-custom-table';
 
 const App = () => (
   <div>
-    <h1>Table</h1>
-    <CustomTable data={data} columns={columns} />
+    <CustomTable 
+    data={data} 
+    columns={columns}   
+    theme={{
+          textColor: "#6f6969",
+          buttonBg: "#000",
+          borderColor: "#f0ebeb",
+          headerBg: "#f3f3f3",
+          rowHoverColor: "#dde8f0",
+        }}
+        pagination={true}
+        tableTitle={"User Info Table"}
+        />
   </div>
 );
 
