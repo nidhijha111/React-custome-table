@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDownload } from "@fortawesome/free-solid-svg-icons";
-import { Button, DropdownButton, DropdownItem, DropdownMenu, DropdownWrapper, Input, TableWrapper, Toolbar, CustomeTable, Tr, Td } from "./styledcomponets/style";
+import { faBoxOpen, faChevronDown, faDownload } from "@fortawesome/free-solid-svg-icons";
+import { Button, DropdownButton, DropdownItem, DropdownMenu, DropdownWrapper, Input, TableWrapper, Toolbar, DivTable, DivRow, DivCell, DataNotFoundSection, } from "./styledcomponets/style";
 import Pagination from "./pagination";
 import TheadData from "./theadData";
-const Table = ({ columns, data, theme = {}, pagination, tableTitle }) => {
+const Table = ({ columns, data, theme = {}, pagination, tableTitle, customPaginationHandler, }) => {
     const [sortConfig, setSortConfig] = useState(null);
     const [searchText, setSearchText] = useState("");
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -72,9 +72,18 @@ const Table = ({ columns, data, theme = {}, pagination, tableTitle }) => {
         }));
     }, [sortedData, checkedFilterOptions]);
     const paginatedData = useMemo(() => {
+        if (customPaginationHandler) {
+            return data;
+        }
         const start = (currentPage - 1) * rowsPerPage;
         return finalFilteredData.slice(start, start + rowsPerPage);
-    }, [finalFilteredData, currentPage, rowsPerPage]);
+    }, [
+        data,
+        finalFilteredData,
+        currentPage,
+        rowsPerPage,
+        customPaginationHandler,
+    ]);
     const totalPages = Math.max(1, Math.ceil(finalFilteredData.length / rowsPerPage));
     const handleSort = (columnKey) => {
         setSortConfig((prev) => (prev === null || prev === void 0 ? void 0 : prev.key) === columnKey
@@ -96,6 +105,14 @@ const Table = ({ columns, data, theme = {}, pagination, tableTitle }) => {
         link.click();
         URL.revokeObjectURL(url);
     };
+    const toggleAllColumns = () => {
+        if (visibleColumns.length === columns.length) {
+            setVisibleColumns([]);
+        }
+        else {
+            setVisibleColumns(columns.map((col) => col.dataIndex));
+        }
+    };
     return (React.createElement(TableWrapper, { themeStyle: theme },
         tableTitle && React.createElement("div", null, tableTitle),
         React.createElement(Toolbar, null,
@@ -109,19 +126,46 @@ const Table = ({ columns, data, theme = {}, pagination, tableTitle }) => {
                     React.createElement(FontAwesomeIcon, { icon: faDownload }),
                     " Export CSV"),
                 React.createElement(DropdownWrapper, { ref: dropdownRef },
-                    React.createElement(DropdownButton, { onClick: () => setIsOpen((o) => !o) }, "Select Columns"),
-                    isOpen && (React.createElement(DropdownMenu, null, columns.map((col) => (React.createElement(DropdownItem, { key: col.dataIndex },
-                        React.createElement("input", { type: "checkbox", checked: visibleColumns.includes(col.dataIndex), onChange: () => toggleColumn(col.dataIndex) }),
-                        col.title)))))))),
+                    React.createElement(DropdownButton, { onClick: () => setIsOpen((o) => !o), themeStyle: theme },
+                        React.createElement("span", null, "Columns"),
+                        " ",
+                        React.createElement("span", null,
+                            React.createElement(FontAwesomeIcon, { icon: faChevronDown }))),
+                    isOpen && (React.createElement(DropdownMenu, null,
+                        React.createElement(DropdownItem, { key: "all" },
+                            React.createElement("input", { type: "checkbox", checked: visibleColumns.length === columns.length, onChange: () => toggleAllColumns() }),
+                            "All"),
+                        columns.map((col) => (React.createElement(DropdownItem, { key: col.dataIndex },
+                            React.createElement("input", { type: "checkbox", checked: visibleColumns.includes(col.dataIndex), onChange: () => toggleColumn(col.dataIndex) }),
+                            col.title)))))))),
         React.createElement("div", { style: { overflowX: "auto" } },
-            React.createElement(CustomeTable, { themeStyle: theme },
-                React.createElement("thead", null,
-                    React.createElement(Tr, null, columns
-                        .filter((col) => visibleColumns.includes(col.dataIndex))
-                        .map((col) => (React.createElement(TheadData, { key: col.dataIndex, col: col, handleSort: handleSort, filters: filters, setFilters: setFilters, setCurrentPage: setCurrentPage, activeFilterColumn: activeFilterColumn, setActiveFilterColumn: setActiveFilterColumn, sortConfig: sortConfig, filterDropdownRef: filterDropdownRef, getUniqueColumnValues: getUniqueColumnValues, checkedFilterOptions: checkedFilterOptions, setCheckedFilterOptions: setCheckedFilterOptions, theme: theme, data: data }))))),
-                React.createElement("tbody", null, paginatedData.map((row, rowIndex) => (React.createElement(Tr, { key: rowIndex }, columns
+            React.createElement(DivTable, { themeStyle: theme },
+                React.createElement(DivRow, { isHeader: true, themeStyle: theme }, columns
                     .filter((col) => visibleColumns.includes(col.dataIndex))
-                    .map((col) => (React.createElement(Td, { key: col.dataIndex }, row[col.dataIndex]))))))))),
-        pagination && React.createElement(Pagination, { currentPage: currentPage, totalPages: totalPages, setCurrentPage: setCurrentPage, setRowsPerPage: setRowsPerPage, rowsPerPage: rowsPerPage, data: data, theme: theme })));
+                    .map((col) => (React.createElement(TheadData, { key: col.dataIndex, col: col, handleSort: handleSort, filters: filters, setFilters: setFilters, setCurrentPage: setCurrentPage, activeFilterColumn: activeFilterColumn, setActiveFilterColumn: setActiveFilterColumn, sortConfig: sortConfig, filterDropdownRef: filterDropdownRef, getUniqueColumnValues: getUniqueColumnValues, checkedFilterOptions: checkedFilterOptions, setCheckedFilterOptions: setCheckedFilterOptions, theme: theme, data: data })))),
+                paginatedData.length > 0 ? (paginatedData.map((row, rowIndex) => (React.createElement(DivRow, { key: rowIndex, themeStyle: theme }, columns
+                    .filter((col) => visibleColumns.includes(col.dataIndex))
+                    .map((col) => {
+                    const value = row[col.dataIndex];
+                    const content = col.customRenderer
+                        ? col.customRenderer(row, value)
+                        : value;
+                    return (React.createElement(DivCell, { width: col === null || col === void 0 ? void 0 : col.width, themeStyle: theme, key: col.dataIndex }, content));
+                }))))) : (React.createElement(DivRow, { themeStyle: theme },
+                    React.createElement(DataNotFoundSection, { themeStyle: theme },
+                        React.createElement(FontAwesomeIcon, { icon: faBoxOpen, style: { fontSize: "3rem" } }),
+                        React.createElement("span", { style: { marginTop: "0.5rem" } }, "No data available")))))),
+        pagination && (React.createElement(Pagination, { currentPage: currentPage, totalPages: totalPages, setCurrentPage: (page) => {
+                setCurrentPage(page);
+                if (customPaginationHandler) {
+                    customPaginationHandler(page, rowsPerPage);
+                }
+            }, setRowsPerPage: (limit) => {
+                setRowsPerPage(limit);
+                setCurrentPage(1);
+                if (customPaginationHandler) {
+                    customPaginationHandler(1, limit);
+                }
+            }, rowsPerPage: rowsPerPage, data: customPaginationHandler ? [] : finalFilteredData, theme: theme }))));
 };
 export default Table;

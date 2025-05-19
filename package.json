@@ -1,6 +1,6 @@
 {
   "name": "react-custome-table",
-  "version": "1.0.33",
+  "version": "1.0.52",
   "description": "A customizable React table component",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -28,8 +28,8 @@
   },
   "homepage": "https://github.com/nidhijha111/React-custome-tables#readme",
   "peerDependencies": {
-    "react": "^17.0.0 || ^18.0.0 || ^19.0.0",
-    "react-dom": "^17.0.0 || ^18.0.0 || ^19.0.0"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.7.2",

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDownload } from "@fortawesome/free-solid-svg-icons";
+import { faBoxOpen, faChevronDown, faDownload } from "@fortawesome/free-solid-svg-icons";
 import {
   Button,
   DropdownButton,
@@ -10,9 +10,10 @@ import {
   Input,
   TableWrapper,
   Toolbar,
-  CustomeTable,
-  Tr,
-  Td
+  DivTable,
+  DivRow,
+  DivCell,
+  DataNotFoundSection,
 } from "./styledcomponets/style";
 import type { TableProps } from "../interface/table";
 import Pagination from "./pagination";
@@ -23,7 +24,8 @@ const Table: React.FC<TableProps> = ({
   data,
   theme = {},
   pagination,
-  tableTitle
+  tableTitle,
+  customPaginationHandler,
 }) => {
   const [sortConfig, setSortConfig] = useState<null | {
     key: string;
@@ -113,9 +115,18 @@ const Table: React.FC<TableProps> = ({
   }, [sortedData, checkedFilterOptions]);
 
   const paginatedData = useMemo(() => {
+    if (customPaginationHandler) {
+      return data;
+    }
     const start = (currentPage - 1) * rowsPerPage;
     return finalFilteredData.slice(start, start + rowsPerPage);
-  }, [finalFilteredData, currentPage, rowsPerPage]);
+  }, [
+    data,
+    finalFilteredData,
+    currentPage,
+    rowsPerPage,
+    customPaginationHandler,
+  ]);
 
   const totalPages = Math.max(
     1,
@@ -148,11 +159,17 @@ const Table: React.FC<TableProps> = ({
     URL.revokeObjectURL(url);
   };
 
+  const toggleAllColumns = () => {
+    if (visibleColumns.length === columns.length) {
+      setVisibleColumns([]);
+    } else {
+      setVisibleColumns(columns.map((col) => col.dataIndex)); 
+    }
+  };
+
   return (
     <TableWrapper themeStyle={theme}>
-      {tableTitle && <div>
-        {tableTitle}
-      </div>}
+      {tableTitle && <div>{tableTitle}</div>}
       <Toolbar>
         <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
           <Input
@@ -170,11 +187,19 @@ const Table: React.FC<TableProps> = ({
             <FontAwesomeIcon icon={faDownload} /> Export CSV
           </Button>
           <DropdownWrapper ref={dropdownRef}>
-            <DropdownButton onClick={() => setIsOpen((o) => !o)}>
-              Select Columns
+            <DropdownButton onClick={() => setIsOpen((o) => !o)} themeStyle={theme}>
+              <span>Columns</span> <span><FontAwesomeIcon icon={faChevronDown} /></span>
             </DropdownButton>
             {isOpen && (
               <DropdownMenu>
+                <DropdownItem key="all">
+                  <input
+                    type="checkbox"
+                    checked={visibleColumns.length === columns.length}
+                    onChange={() => toggleAllColumns()}
+                  />
+                  All
+                </DropdownItem>
                 {columns.map((col) => (
                   <DropdownItem key={col.dataIndex}>
                     <input
@@ -192,55 +217,90 @@ const Table: React.FC<TableProps> = ({
       </Toolbar>
 
       <div style={{ overflowX: "auto" }}>
-        <CustomeTable themeStyle={theme}>
-          <thead>
-            <Tr>
-              {columns
-                .filter((col) => visibleColumns.includes(col.dataIndex))
-                .map((col) => (
-                  <TheadData
-                    key={col.dataIndex}
-                    col={col}
-                    handleSort={handleSort}
-                    filters={filters}
-                    setFilters={setFilters}
-                    setCurrentPage={setCurrentPage}
-                    activeFilterColumn={activeFilterColumn}
-                    setActiveFilterColumn={setActiveFilterColumn}
-                    sortConfig={sortConfig}
-                    filterDropdownRef={filterDropdownRef}
-                    getUniqueColumnValues={getUniqueColumnValues}
-                    checkedFilterOptions={checkedFilterOptions}
-                    setCheckedFilterOptions={setCheckedFilterOptions}
-                    theme={theme}
-                    data={data}
-                  />
-                ))}
-            </Tr>
-          </thead>
-          <tbody>
-            {paginatedData.map((row, rowIndex) => (
-              <Tr key={rowIndex}>
+        <DivTable themeStyle={theme}>
+          <DivRow isHeader themeStyle={theme}>
+            {columns
+              .filter((col) => visibleColumns.includes(col.dataIndex))
+              .map((col) => (
+                <TheadData
+                  key={col.dataIndex}
+                  col={col}
+                  handleSort={handleSort}
+                  filters={filters}
+                  setFilters={setFilters}
+                  setCurrentPage={setCurrentPage}
+                  activeFilterColumn={activeFilterColumn}
+                  setActiveFilterColumn={setActiveFilterColumn}
+                  sortConfig={sortConfig}
+                  filterDropdownRef={filterDropdownRef}
+                  getUniqueColumnValues={getUniqueColumnValues}
+                  checkedFilterOptions={checkedFilterOptions}
+                  setCheckedFilterOptions={setCheckedFilterOptions}
+                  theme={theme}
+                  data={data}
+                />
+              ))}
+          </DivRow>
+          {paginatedData.length > 0 ? (
+            paginatedData.map((row, rowIndex) => (
+              <DivRow key={rowIndex} themeStyle={theme}>
                 {columns
                   .filter((col) => visibleColumns.includes(col.dataIndex))
-                  .map((col) => (
-                    <Td key={col.dataIndex}>{row[col.dataIndex]}</Td>
-                  ))}
-              </Tr>
-            ))}
-          </tbody>
-        </CustomeTable>
+                  .map((col) => {
+                    const value = row[col.dataIndex];
+                    const content = col.customRenderer
+                      ? col.customRenderer(row, value)
+                      : value;
+
+                    return (
+                      <DivCell
+                        width={col?.width}
+                        themeStyle={theme}
+                        key={col.dataIndex}
+                      >
+                        {content}
+                      </DivCell>
+                    );
+                  })}
+              </DivRow>
+            ))
+          ) : (
+            <DivRow themeStyle={theme}>
+              <DataNotFoundSection themeStyle={theme}>
+                <FontAwesomeIcon
+                  icon={faBoxOpen}
+                  style={{ fontSize: "3rem" }}
+                />
+
+                <span style={{ marginTop: "0.5rem" }}>No data available</span>
+              </DataNotFoundSection>
+            </DivRow>
+          )}
+        </DivTable>
       </div>
 
-      {pagination && <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        setCurrentPage={setCurrentPage}
-        setRowsPerPage={setRowsPerPage}
-        rowsPerPage={rowsPerPage}
-        data={data}
-        theme={theme}
-      />}
+      {pagination && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          setCurrentPage={(page) => {
+            setCurrentPage(page);
+            if (customPaginationHandler) {
+              customPaginationHandler(page, rowsPerPage);
+            }
+          }}
+          setRowsPerPage={(limit) => {
+            setRowsPerPage(limit);
+            setCurrentPage(1);
+            if (customPaginationHandler) {
+              customPaginationHandler(1, limit);
+            }
+          }}
+          rowsPerPage={rowsPerPage}
+          data={customPaginationHandler ? [] : finalFilteredData}
+          theme={theme}
+        />
+      )}
     </TableWrapper>
   );
 };

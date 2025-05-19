@@ -3,14 +3,15 @@ import {
   Button,
   CancelButton,
   ColumnFunctionIcon,
+  DivCell,
   FilterButtonWrapper,
   FilterCloseButton,
   FilterContentWrapper,
+  FilterOptionWrapper,
   Input,
   InputCheckbox,
   Label,
   SearchColumnInput,
-  Th,
 } from "./styledcomponets/style";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUp, faSearch } from "@fortawesome/free-solid-svg-icons";
@@ -33,15 +34,15 @@ export default function TheadData({
   data,
 }) {
   const [showFilterInput, setShowFilterInput] = useState(false);
-  console.log(col, "jnjnjinkink");
   return (
-    <Th key={col.dataIndex} width={col?.width}>
+    <DivCell key={col.dataIndex} width={col?.width} themeStyle={theme} isHeader>
       <div
         style={{
           display: "flex",
           flexDirection: "row",
           justifyContent: "space-between",
-          minWidth: `${col?.width}px !important`,
+          gap:"0.5rem",
+          width:"100%"
         }}
       >
         <div
@@ -68,24 +69,33 @@ export default function TheadData({
             />
           )}
         </div>
-        <ColumnFunctionIcon
-        >
+        <ColumnFunctionIcon>
           {col.showSearch === true &&
             (showFilterInput ? (
               <span
                 onClick={() => {
                   setShowFilterInput(false);
                 }}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
               >
-                <FontAwesomeIcon icon={faTimes} />
+                <FontAwesomeIcon icon={faTimes} style={{ fontSize: "14px" }} />
               </span>
             ) : (
               <span
                 onClick={() => {
                   setShowFilterInput(true);
                 }}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
               >
-                <FontAwesomeIcon icon={faSearch} />
+                <FontAwesomeIcon icon={faSearch} style={{ fontSize: "13px" }} />
               </span>
             ))}
           {col.sorter && (
@@ -94,6 +104,8 @@ export default function TheadData({
                 backgroundColor: "none",
                 border: "none",
                 cursor: col.sorter ? "pointer" : "default",
+                padding:"0px",
+                margin:"0px",
               }}
               onClick={() => col.sorter && handleSort(col.dataIndex)}
             >
@@ -108,16 +120,17 @@ export default function TheadData({
                       : "none",
                   color: sortConfig?.key === col.dataIndex ? "#000" : "#9f9a9a",
                   transition: "transform 0.2s ease",
+                  fontSize: "12px",
                 }}
               />
             </button>
           )}
 
           {col.showFilter && (
-            <div>
+            <>
               <FontAwesomeIcon
                 icon={faFilter}
-                style={{ cursor: "pointer" }}
+                style={{ cursor: "pointer", fontSize: "12px" }}
                 onClick={() =>
                   setActiveFilterColumn(
                     activeFilterColumn === col.dataIndex ? null : col.dataIndex
@@ -129,35 +142,42 @@ export default function TheadData({
                   <FilterCloseButton
                     onClick={() => setActiveFilterColumn(null)}
                   >
-                    <FontAwesomeIcon icon={faTimes} />
+                    <FontAwesomeIcon
+                      icon={faTimes}
+                      style={{
+                        fontSize: "18px",
+                      }}
+                    />
                   </FilterCloseButton>
-
-                  {getUniqueColumnValues(data, col.dataIndex).map((val) => (
-                    <Label key={val}>
-                      <InputCheckbox
-                        type="checkbox"
-                        checked={
-                          checkedFilterOptions[col.dataIndex]?.includes(val) ??
-                          false
-                        }
-                        onChange={(e) => {
-                          const checked = e.target.checked;
-                          setCheckedFilterOptions((prev) => {
-                            const existing = prev[col.dataIndex] || [];
-                            const updated = checked
-                              ? [...existing, val]
-                              : existing.filter((v) => v !== val);
-                            return {
-                              ...prev,
-                              [col.dataIndex]: updated,
-                            };
-                          });
-                          setCurrentPage(1);
-                        }}
-                      />
-                      {val}
-                    </Label>
-                  ))}
+                  <FilterOptionWrapper width={col?.width}>
+                    {getUniqueColumnValues(data, col.dataIndex).map((val) => (
+                      <Label key={val} themeStyle={theme}>
+                        <InputCheckbox
+                          type="checkbox"
+                          checked={
+                            checkedFilterOptions[col.dataIndex]?.includes(
+                              val
+                            ) ?? false
+                          }
+                          onChange={(e) => {
+                            const checked = e.target.checked;
+                            setCheckedFilterOptions((prev) => {
+                              const existing = prev[col.dataIndex] || [];
+                              const updated = checked
+                                ? [...existing, val]
+                                : existing.filter((v) => v !== val);
+                              return {
+                                ...prev,
+                                [col.dataIndex]: updated,
+                              };
+                            });
+                            setCurrentPage(1);
+                          }}
+                        />
+                        {val}
+                      </Label>
+                    ))}
+                  </FilterOptionWrapper>
                   <FilterButtonWrapper>
                     <CancelButton
                       onClick={() => {
@@ -182,10 +202,10 @@ export default function TheadData({
                   </FilterButtonWrapper>
                 </FilterContentWrapper>
               )}
-            </div>
+            </>
           )}
         </ColumnFunctionIcon>
       </div>
-    </Th>
+    </DivCell>
   );
 }
